@@ -61,7 +61,9 @@ import com.sfl.pms.services.payment.method.dto.group.GroupPaymentMethodDefinitio
 import com.sfl.pms.services.payment.method.dto.individual.IndividualPaymentMethodDefinitionDto;
 import com.sfl.pms.services.payment.method.model.PaymentMethodDefinition;
 import com.sfl.pms.services.payment.method.model.PaymentMethodGroupType;
+import com.sfl.pms.services.payment.method.model.PaymentMethodSettings;
 import com.sfl.pms.services.payment.method.model.PaymentMethodType;
+import com.sfl.pms.services.payment.method.model.acapture.AcapturePaymentMethodSettings;
 import com.sfl.pms.services.payment.method.model.adyen.AdyenPaymentMethodType;
 import com.sfl.pms.services.payment.method.model.group.GroupPaymentMethodDefinition;
 import com.sfl.pms.services.payment.method.model.individual.IndividualPaymentMethodDefinition;
@@ -975,6 +977,19 @@ public class ServicesImplTestHelper {
         paymentSettings.setEnvironmentType(EnvironmentType.STAGING);
         paymentSettings.setHostPageUrl("http://mysite.com/payment/");
         return paymentSettings;
+    }
+
+    public PaymentMethodSettings createPaymentMethodSettings() {
+        return createAcapturePaymentMethodSettings();
+    }
+
+    public AcapturePaymentMethodSettings createAcapturePaymentMethodSettings() {
+        final AcapturePaymentMethodSettings paymentMethodSettings = new AcapturePaymentMethodSettings();
+        paymentMethodSettings.setProviderType(PaymentProviderType.ACAPTURE);
+        paymentMethodSettings.setPaymentMethodType(PaymentMethodType.VISA);
+        paymentMethodSettings.setPaymentSettings(createAcapturePaymentSettings());
+        paymentMethodSettings.setAuthorizationId(UUID.randomUUID().toString());
+        return paymentMethodSettings;
     }
 
 

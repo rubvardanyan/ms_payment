@@ -1,6 +1,7 @@
 package com.sfl.pms.services.helper;
 
 import com.sfl.pms.externalclients.payment.adyen.model.datatypes.AdyenPaymentStatus;
+import com.sfl.pms.persistence.repositories.payment.method.acapture.AcapturePaymentMethodSettingsRepository;
 import com.sfl.pms.persistence.repositories.payment.settings.acapture.AcapturePaymentSettingsRepository;
 import com.sfl.pms.persistence.utility.PersistenceUtilityService;
 import com.sfl.pms.services.common.exception.ServicesRuntimeException;
@@ -68,7 +69,9 @@ import com.sfl.pms.services.payment.method.group.GroupPaymentMethodDefinitionSer
 import com.sfl.pms.services.payment.method.individual.IndividualPaymentMethodDefinitionService;
 import com.sfl.pms.services.payment.method.model.PaymentMethodDefinition;
 import com.sfl.pms.services.payment.method.model.PaymentMethodGroupType;
+import com.sfl.pms.services.payment.method.model.PaymentMethodSettings;
 import com.sfl.pms.services.payment.method.model.PaymentMethodType;
+import com.sfl.pms.services.payment.method.model.acapture.AcapturePaymentMethodSettings;
 import com.sfl.pms.services.payment.method.model.adyen.AdyenPaymentMethodType;
 import com.sfl.pms.services.payment.method.model.group.GroupPaymentMethodDefinition;
 import com.sfl.pms.services.payment.method.model.individual.IndividualPaymentMethodDefinition;
@@ -244,6 +247,9 @@ public class ServicesTestHelper {
 
     @Autowired
     private AcapturePaymentSettingsRepository acapturePaymentSettingsRepository;
+
+    @Autowired
+    private AcapturePaymentMethodSettingsRepository acapturePaymentMethodSettingsRepository;
 
     /* Constructors */
     public ServicesTestHelper() {
@@ -1210,7 +1216,6 @@ public class ServicesTestHelper {
         return createAcapturePaymentSettings(EnvironmentType.TEST);
     }
 
-
     public AcapturePaymentSettings createAcapturePaymentSettings(final EnvironmentType environmentType) {
         final AcapturePaymentSettings paymentSettings = new AcapturePaymentSettings();
         paymentSettings.setNotificationsToken(UUID.randomUUID().toString());
@@ -1219,6 +1224,19 @@ public class ServicesTestHelper {
         paymentSettings.setEnvironmentType(environmentType);
         paymentSettings.setHostPageUrl("http://mysite.com/payment/");
         return acapturePaymentSettingsRepository.save(paymentSettings);
+    }
+
+    public PaymentMethodSettings createPaymentMethodSettings() {
+        return createAcapturePaymentMethodSettings();
+    }
+
+    public AcapturePaymentMethodSettings createAcapturePaymentMethodSettings() {
+        final AcapturePaymentMethodSettings paymentMethodSettings = new AcapturePaymentMethodSettings();
+        paymentMethodSettings.setProviderType(PaymentProviderType.ACAPTURE);
+        paymentMethodSettings.setPaymentMethodType(PaymentMethodType.VISA);
+        paymentMethodSettings.setPaymentSettings(createAcapturePaymentSettings());
+        paymentMethodSettings.setAuthorizationId(UUID.randomUUID().toString());
+        return acapturePaymentMethodSettingsRepository.save(paymentMethodSettings);
     }
 
     /* Utility methods */

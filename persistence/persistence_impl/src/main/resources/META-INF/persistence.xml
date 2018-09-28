@@ -37,6 +37,10 @@
         <class>com.sfl.pms.services.payment.method.model.individual.IndividualPaymentMethodDefinition</class>
         <class>com.sfl.pms.services.payment.method.model.group.GroupPaymentMethodDefinition</class>
 
+        <!-- Payment method settings -->
+        <class>com.sfl.pms.services.payment.method.model.PaymentMethodSettings</class>
+        <class>com.sfl.pms.services.payment.method.model.acapture.AcapturePaymentMethodSettings</class>
+
         <!-- Order payment request -->
         <class>com.sfl.pms.services.payment.common.model.order.request.OrderPaymentRequest</class>
         <class>com.sfl.pms.services.payment.common.model.order.request.OrderRequestPaymentMethod</class>
