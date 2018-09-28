@@ -1,4 +1,4 @@
-package com.sfl.pms.services.payment.settings.impl;
+package com.sfl.pms.services.payment.settings.impl.adyen;
 
 import com.sfl.pms.persistence.repositories.payment.settings.AbstractPaymentProviderSettingsRepository;
 import com.sfl.pms.persistence.repositories.payment.settings.adyen.AdyenPaymentSettingsRepository;
@@ -7,6 +7,7 @@ import com.sfl.pms.services.payment.settings.AbstractPaymentProviderSettingsServ
 import com.sfl.pms.services.payment.settings.dto.adyen.AdyenPaymentSettingsDto;
 import com.sfl.pms.services.payment.settings.exception.PaymentProviderSettingsExistsForEnvironmentException;
 import com.sfl.pms.services.payment.settings.exception.PaymentProviderSettingsNotFoundForEnvironmentException;
+import com.sfl.pms.services.payment.settings.impl.AbstractPaymentProviderSettingsServiceImplTest;
 import com.sfl.pms.services.payment.settings.impl.adyen.AdyenPaymentSettingsServiceImpl;
 import com.sfl.pms.services.payment.settings.model.adyen.AdyenPaymentSettings;
 import com.sfl.pms.services.system.environment.model.EnvironmentType;

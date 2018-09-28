@@ -1,6 +1,7 @@
 package com.sfl.pms.services.helper;
 
 import com.sfl.pms.externalclients.payment.adyen.model.datatypes.AdyenPaymentStatus;
+import com.sfl.pms.persistence.repositories.payment.settings.acapture.AcapturePaymentSettingsRepository;
 import com.sfl.pms.persistence.utility.PersistenceUtilityService;
 import com.sfl.pms.services.common.exception.ServicesRuntimeException;
 import com.sfl.pms.services.country.model.CountryCode;
@@ -92,6 +93,7 @@ import com.sfl.pms.services.payment.redirect.model.PaymentProviderRedirectResult
 import com.sfl.pms.services.payment.redirect.model.adyen.AdyenRedirectResult;
 import com.sfl.pms.services.payment.settings.adyen.AdyenPaymentSettingsService;
 import com.sfl.pms.services.payment.settings.dto.adyen.AdyenPaymentSettingsDto;
+import com.sfl.pms.services.payment.settings.model.acapture.AcapturePaymentSettings;
 import com.sfl.pms.services.payment.settings.model.adyen.AdyenPaymentSettings;
 import com.sfl.pms.services.system.environment.model.EnvironmentType;
 import org.apache.commons.io.IOUtils;
@@ -239,6 +241,9 @@ public class ServicesTestHelper {
 
     @Autowired
     private GroupPaymentMethodDefinitionService groupPaymentMethodDefinitionService;
+
+    @Autowired
+    private AcapturePaymentSettingsRepository acapturePaymentSettingsRepository;
 
     /* Constructors */
     public ServicesTestHelper() {
@@ -1198,6 +1203,22 @@ public class ServicesTestHelper {
         paymentMethodDefinitionDto.setAuthorizationSurcharge(BigDecimal.ONE);
         paymentMethodDefinitionDto.setPaymentSurcharge(BigDecimal.TEN);
         paymentMethodDefinitionDto.setRecurringPaymentEnabled(true);
+    }
+
+    /* Acapture payment settings */
+    public AcapturePaymentSettings createAcapturePaymentSettings() {
+        return createAcapturePaymentSettings(EnvironmentType.TEST);
+    }
+
+
+    public AcapturePaymentSettings createAcapturePaymentSettings(final EnvironmentType environmentType) {
+        final AcapturePaymentSettings paymentSettings = new AcapturePaymentSettings();
+        paymentSettings.setNotificationsToken(UUID.randomUUID().toString());
+        paymentSettings.setPassword(UUID.randomUUID().toString());
+        paymentSettings.setUserName(UUID.randomUUID().toString());
+        paymentSettings.setEnvironmentType(environmentType);
+        paymentSettings.setHostPageUrl("http://mysite.com/payment/");
+        return acapturePaymentSettingsRepository.save(paymentSettings);
     }
 
     /* Utility methods */

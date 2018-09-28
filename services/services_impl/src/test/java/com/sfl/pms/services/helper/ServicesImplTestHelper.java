@@ -79,6 +79,7 @@ import com.sfl.pms.services.payment.redirect.dto.redirect.AdyenRedirectResultDto
 import com.sfl.pms.services.payment.redirect.model.PaymentProviderRedirectResultState;
 import com.sfl.pms.services.payment.redirect.model.adyen.AdyenRedirectResult;
 import com.sfl.pms.services.payment.settings.dto.adyen.AdyenPaymentSettingsDto;
+import com.sfl.pms.services.payment.settings.model.acapture.AcapturePaymentSettings;
 import com.sfl.pms.services.payment.settings.model.adyen.AdyenPaymentSettings;
 import com.sfl.pms.services.system.environment.model.EnvironmentType;
 import com.sfl.pms.services.util.mutable.MutableHolder;
@@ -86,6 +87,7 @@ import org.junit.Assert;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -962,6 +964,17 @@ public class ServicesImplTestHelper {
 
     public OrderProviderPaymentChannel createOrderProviderPaymentChannel() {
         return createOrderProviderPaymentChannel(createOrderProviderPaymentChannelDto());
+    }
+
+    /* Acapture payment settings */
+    public AcapturePaymentSettings createAcapturePaymentSettings() {
+        final AcapturePaymentSettings paymentSettings = new AcapturePaymentSettings();
+        paymentSettings.setNotificationsToken(UUID.randomUUID().toString());
+        paymentSettings.setPassword(UUID.randomUUID().toString());
+        paymentSettings.setUserName(UUID.randomUUID().toString());
+        paymentSettings.setEnvironmentType(EnvironmentType.STAGING);
+        paymentSettings.setHostPageUrl("http://mysite.com/payment/");
+        return paymentSettings;
     }
 
 

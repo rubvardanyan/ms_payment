@@ -17,6 +17,7 @@
         <!-- Payment settings -->
         <class>com.sfl.pms.services.payment.settings.model.PaymentProviderSettings</class>
         <class>com.sfl.pms.services.payment.settings.model.adyen.AdyenPaymentSettings</class>
+        <class>com.sfl.pms.services.payment.settings.model.acapture.AcapturePaymentSettings</class>
 
         <!-- Payment -->
         <class>com.sfl.pms.services.payment.common.model.Payment</class>
