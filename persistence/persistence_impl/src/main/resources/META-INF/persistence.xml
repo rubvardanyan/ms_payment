@@ -82,6 +82,7 @@
         <!-- Payment provider redirect result -->
         <class>com.sfl.pms.services.payment.redirect.model.PaymentProviderRedirectResult</class>
         <class>com.sfl.pms.services.payment.redirect.model.adyen.AdyenRedirectResult</class>
+        <class>com.sfl.pms.services.payment.redirect.model.acapture.AcaptureRedirectResult</class>
 
     </persistence-unit>
 </persistence>

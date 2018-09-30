@@ -1,4 +1,4 @@
-package com.sfl.pms.services.payment.redirect.dto.redirect;
+package com.sfl.pms.services.payment.redirect.dto.redirect.adyen;
 
 import com.sfl.pms.services.payment.provider.model.PaymentProviderType;
 import com.sfl.pms.services.payment.redirect.dto.PaymentProviderRedirectResultDto;

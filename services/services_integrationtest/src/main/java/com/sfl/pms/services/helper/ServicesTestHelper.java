@@ -90,9 +90,12 @@ import com.sfl.pms.services.payment.processing.order.OrderPaymentRequestProcesso
 import com.sfl.pms.services.payment.provider.adyen.AdyenPaymentProviderIntegrationService;
 import com.sfl.pms.services.payment.provider.model.PaymentProviderIntegrationType;
 import com.sfl.pms.services.payment.provider.model.PaymentProviderType;
+import com.sfl.pms.services.payment.redirect.acapture.AcaptureRedirectResultService;
 import com.sfl.pms.services.payment.redirect.adyen.AdyenRedirectResultService;
-import com.sfl.pms.services.payment.redirect.dto.redirect.AdyenRedirectResultDto;
+import com.sfl.pms.services.payment.redirect.dto.redirect.acapture.AcaptureRedirectResultDto;
+import com.sfl.pms.services.payment.redirect.dto.redirect.adyen.AdyenRedirectResultDto;
 import com.sfl.pms.services.payment.redirect.model.PaymentProviderRedirectResultState;
+import com.sfl.pms.services.payment.redirect.model.acapture.AcaptureRedirectResult;
 import com.sfl.pms.services.payment.redirect.model.adyen.AdyenRedirectResult;
 import com.sfl.pms.services.payment.settings.adyen.AdyenPaymentSettingsService;
 import com.sfl.pms.services.payment.settings.dto.adyen.AdyenPaymentSettingsDto;
@@ -232,6 +235,9 @@ public class ServicesTestHelper {
 
     @Autowired
     private AdyenRedirectResultService adyenRedirectResultService;
+
+    @Autowired
+    private AcaptureRedirectResultService acaptureRedirectResultService;
 
     @Autowired
     private AdyenPaymentProviderIntegrationService adyenPaymentProviderIntegrationService;
@@ -1237,6 +1243,26 @@ public class ServicesTestHelper {
         paymentMethodSettings.setPaymentSettings(createAcapturePaymentSettings());
         paymentMethodSettings.setAuthorizationId(UUID.randomUUID().toString());
         return acapturePaymentMethodSettingsRepository.save(paymentMethodSettings);
+    }
+
+    /* Acapture redirect result */
+    public AcaptureRedirectResultDto createAcaptureRedirectResultDto() {
+        return new AcaptureRedirectResultDto(UUID.randomUUID().toString(), UUID.randomUUID().toString());
+    }
+
+    public AcaptureRedirectResult createAcaptureRedirectResult() {
+        return createAcaptureRedirectResult(createAcaptureRedirectResultDto());
+    }
+
+    public AcaptureRedirectResult createAcaptureRedirectResult(final AcaptureRedirectResultDto dto) {
+        return acaptureRedirectResultService.createPaymentProviderRedirectResult(dto);
+    }
+
+    public void assertAcaptureRedirectResult(final AcaptureRedirectResult redirectResult, final AcaptureRedirectResultDto dto) {
+        assertNotNull(redirectResult);
+        assertEquals(PaymentProviderType.ACAPTURE, redirectResult.getType());
+        assertEquals(dto.getCheckoutId(), redirectResult.getCheckoutId());
+        assertEquals(dto.getResourcePath(), redirectResult.getResourcePath());
     }
 
     /* Utility methods */

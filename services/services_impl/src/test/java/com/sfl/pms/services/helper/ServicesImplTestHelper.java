@@ -79,8 +79,10 @@ import com.sfl.pms.services.payment.notification.model.adyen.AdyenPaymentProvide
 import com.sfl.pms.services.payment.provider.dto.AdyenRedirectUrlGenerationDto;
 import com.sfl.pms.services.payment.provider.model.PaymentProviderIntegrationType;
 import com.sfl.pms.services.payment.provider.model.PaymentProviderType;
-import com.sfl.pms.services.payment.redirect.dto.redirect.AdyenRedirectResultDto;
+import com.sfl.pms.services.payment.redirect.dto.redirect.acapture.AcaptureRedirectResultDto;
+import com.sfl.pms.services.payment.redirect.dto.redirect.adyen.AdyenRedirectResultDto;
 import com.sfl.pms.services.payment.redirect.model.PaymentProviderRedirectResultState;
+import com.sfl.pms.services.payment.redirect.model.acapture.AcaptureRedirectResult;
 import com.sfl.pms.services.payment.redirect.model.adyen.AdyenRedirectResult;
 import com.sfl.pms.services.payment.settings.dto.adyen.AdyenPaymentSettingsDto;
 import com.sfl.pms.services.payment.settings.model.acapture.AcapturePaymentSettings;
@@ -91,7 +93,6 @@ import org.junit.Assert;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -1004,6 +1005,32 @@ public class ServicesImplTestHelper {
         assertNotNull(metadata);
         assertEquals(PaymentProviderType.ACAPTURE, metadata.getProviderType());
         assertEquals(metadata.getCheckoutId(), dto.getCheckoutId());
+    }
+
+    /* Acapture redirect result */
+    public AcaptureRedirectResult createAcaptureRedirectResult() {
+        final AcaptureRedirectResult acaptureRedirectResult = new AcaptureRedirectResult(true);
+        acaptureRedirectResult.setCheckoutId(UUID.randomUUID().toString());
+        acaptureRedirectResult.setResourcePath(UUID.randomUUID().toString());
+        return acaptureRedirectResult;
+    }
+
+    public AcaptureRedirectResult createAcaptureRedirectResult(final AcaptureRedirectResultDto dto) {
+        final AcaptureRedirectResult acaptureRedirectResult = new AcaptureRedirectResult(true);
+        acaptureRedirectResult.setCheckoutId(dto.getCheckoutId());
+        acaptureRedirectResult.setResourcePath(dto.getResourcePath());
+        return acaptureRedirectResult;
+    }
+
+    public AcaptureRedirectResultDto createAcaptureRedirectResultDto() {
+        return new AcaptureRedirectResultDto(UUID.randomUUID().toString(), UUID.randomUUID().toString());
+    }
+
+    public void assertAcaptureRedirectResult(final AcaptureRedirectResult redirectResult, final AcaptureRedirectResultDto dto) {
+        assertNotNull(redirectResult);
+        assertEquals(PaymentProviderType.ACAPTURE, redirectResult.getType());
+        assertEquals(dto.getCheckoutId(), redirectResult.getCheckoutId());
+        assertEquals(dto.getResourcePath(), redirectResult.getResourcePath());
     }
 
 

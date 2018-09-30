@@ -3,7 +3,7 @@ package com.sfl.pms.queue.consumer.payment.redirect;
 import com.sfl.pms.queue.consumer.test.AbstractQueueConsumerIntegrationTest;
 import com.sfl.pms.services.payment.common.model.order.OrderPayment;
 import com.sfl.pms.services.payment.redirect.adyen.AdyenRedirectResultService;
-import com.sfl.pms.services.payment.redirect.dto.redirect.AdyenRedirectResultDto;
+import com.sfl.pms.services.payment.redirect.dto.redirect.adyen.AdyenRedirectResultDto;
 import com.sfl.pms.services.payment.redirect.model.PaymentProviderRedirectResultState;
 import com.sfl.pms.services.payment.redirect.model.adyen.AdyenRedirectResult;
 import org.junit.Test;
