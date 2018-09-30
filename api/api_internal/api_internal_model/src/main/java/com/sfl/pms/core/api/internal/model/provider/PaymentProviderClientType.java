@@ -7,5 +7,5 @@ package com.sfl.pms.core.api.internal.model.provider;
  * Time: 4:02 PM
  */
 public enum PaymentProviderClientType {
-    ADYEN, BRAINTREE
+    ADYEN, BRAINTREE, ACAPTURE
 }

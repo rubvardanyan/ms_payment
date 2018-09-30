@@ -2,8 +2,10 @@ package com.sfl.pms.services.payment.common;
 
 import com.sfl.pms.services.payment.common.dto.PaymentSearchParameters;
 import com.sfl.pms.services.payment.common.dto.PaymentStateChangeHistoryRecordDto;
+import com.sfl.pms.services.payment.common.dto.metadata.PaymentProviderMetadataDto;
 import com.sfl.pms.services.payment.common.model.Payment;
 import com.sfl.pms.services.payment.common.model.PaymentStateChangeHistoryRecord;
+import com.sfl.pms.services.payment.common.model.metadata.PaymentProviderMetadata;
 import com.sfl.pms.services.payment.method.model.PaymentMethodType;
 
 import javax.annotation.Nonnull;
@@ -65,4 +67,13 @@ public interface PaymentService extends AbstractPaymentService<Payment> {
      */
     @Nonnull
     Payment updateConfirmedPaymentMethodType(@Nonnull final Long paymentId, @Nonnull final PaymentMethodType paymentMethodType);
+
+    /**
+     * Updates payment provider metadata for the given payment id
+     * @param paymentId payment id
+     * @param dto update dto
+     * @return updated payment
+     */
+    @Nonnull
+    Payment updatePaymentProviderMetadata(@Nonnull final Long paymentId, @Nonnull final PaymentProviderMetadataDto dto);
 }

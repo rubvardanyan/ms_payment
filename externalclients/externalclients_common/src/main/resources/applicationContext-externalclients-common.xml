@@ -41,9 +41,9 @@
         <bean class="org.springframework.http.converter.ByteArrayHttpMessageConverter"
               p:supportedMediaTypes="*/*">
         </bean>
-        <!--<bean class="org.springframework.http.converter.FormHttpMessageConverter"-->
-        <!--p:supportedMediaTypes="application/x-www-form-urlencoded">-->
-        <!--</bean>-->
+        <bean class="org.springframework.http.converter.FormHttpMessageConverter"
+            p:supportedMediaTypes="application/x-www-form-urlencoded">
+        </bean>
         <bean class="org.springframework.http.converter.FormHttpMessageConverter"
               p:supportedMediaTypes="text/plain">
         </bean>

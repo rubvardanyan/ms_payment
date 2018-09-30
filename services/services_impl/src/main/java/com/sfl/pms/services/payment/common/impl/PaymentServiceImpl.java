@@ -2,12 +2,19 @@ package com.sfl.pms.services.payment.common.impl;
 
 import com.sfl.pms.persistence.repositories.payment.common.AbstractPaymentRepository;
 import com.sfl.pms.persistence.repositories.payment.common.PaymentRepository;
+import com.sfl.pms.services.common.exception.ServicesRuntimeException;
 import com.sfl.pms.services.payment.common.PaymentService;
 import com.sfl.pms.services.payment.common.dto.PaymentSearchParameters;
 import com.sfl.pms.services.payment.common.dto.PaymentStateChangeHistoryRecordDto;
+import com.sfl.pms.services.payment.common.dto.metadata.PaymentProviderMetadataDto;
+import com.sfl.pms.services.payment.common.impl.metadata.AcapturePaymentProviderMetadataHandler;
+import com.sfl.pms.services.payment.common.impl.metadata.PaymentProviderMetadataHandler;
 import com.sfl.pms.services.payment.common.model.Payment;
 import com.sfl.pms.services.payment.common.model.PaymentStateChangeHistoryRecord;
+import com.sfl.pms.services.payment.common.model.metadata.PaymentProviderMetadata;
 import com.sfl.pms.services.payment.method.model.PaymentMethodType;
+import com.sfl.pms.services.payment.provider.exception.UnknownPaymentProviderTypeException;
+import com.sfl.pms.services.payment.provider.model.PaymentProviderType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +38,9 @@ public class PaymentServiceImpl extends AbstractPaymentServiceImpl<Payment> impl
     /* Dependencies */
     @Autowired
     private PaymentRepository paymentRepository;
+
+    @Autowired
+    private AcapturePaymentProviderMetadataHandler acapturePaymentProviderMetadataHandler;
 
     /* Constructors */
     public PaymentServiceImpl() {
@@ -106,6 +116,20 @@ public class PaymentServiceImpl extends AbstractPaymentServiceImpl<Payment> impl
         return payment;
     }
 
+    @Nonnull
+    @Override
+    public Payment updatePaymentProviderMetadata(@Nonnull final Long paymentId, @Nonnull final PaymentProviderMetadataDto dto) {
+        assertPaymentIdNotNull(paymentId);
+        Assert.notNull(dto);
+        Assert.notNull(dto.getPaymentProviderType());
+        final Payment payment = getRepository().findOne(paymentId);
+        final PaymentProviderMetadataHandler paymentProviderMetadataHandler = getPaymentProviderMetadataHandler(dto.getPaymentProviderType());
+        final PaymentProviderMetadata paymentProviderMetadata = paymentProviderMetadataHandler.convertPaymentProviderMetadataDto(dto);
+        payment.getPaymentProcessingChannel().setPaymentProviderMetadata(paymentProviderMetadata);
+        paymentProviderMetadata.setPaymentProcessingChannel(payment.getPaymentProcessingChannel());
+        return getRepository().save(payment);
+    }
+
     /* Utility methods */
     @Override
     protected AbstractPaymentRepository<Payment> getRepository() {
@@ -124,6 +148,16 @@ public class PaymentServiceImpl extends AbstractPaymentServiceImpl<Payment> impl
     private void assertPaymentStateChangeHistoryRecordDto(final PaymentStateChangeHistoryRecordDto recordDto) {
         Assert.notNull(recordDto, "Payment state change history record DTO should not be null");
         Assert.notNull(recordDto.getUpdatedState(), "Updated state in payment state change history record DTO should not be null");
+    }
+
+    private PaymentProviderMetadataHandler getPaymentProviderMetadataHandler(final PaymentProviderType paymentProviderType) {
+        switch (paymentProviderType) {
+            case ACAPTURE:
+                return acapturePaymentProviderMetadataHandler;
+            default:
+                LOGGER.error("Unknown payment provider type - {}", paymentProviderType);
+                throw new UnknownPaymentProviderTypeException(paymentProviderType);
+        }
     }
 
 

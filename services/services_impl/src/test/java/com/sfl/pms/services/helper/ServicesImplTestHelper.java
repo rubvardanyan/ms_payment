@@ -14,6 +14,7 @@ import com.sfl.pms.services.order.model.OrderStateChangeHistoryRecord;
 import com.sfl.pms.services.order.model.payment.provider.OrderProviderPaymentChannel;
 import com.sfl.pms.services.payment.common.dto.PaymentDto;
 import com.sfl.pms.services.payment.common.dto.PaymentStateChangeHistoryRecordDto;
+import com.sfl.pms.services.payment.common.dto.acapture.AcapturePaymentProviderMetadataDto;
 import com.sfl.pms.services.payment.common.dto.adyen.AdyenPaymentResultDto;
 import com.sfl.pms.services.payment.common.dto.auth.CustomerPaymentMethodAuthorizationPaymentDto;
 import com.sfl.pms.services.payment.common.dto.channel.CustomerPaymentMethodProcessingChannelDto;
@@ -29,6 +30,7 @@ import com.sfl.pms.services.payment.common.model.Payment;
 import com.sfl.pms.services.payment.common.model.PaymentResultStatus;
 import com.sfl.pms.services.payment.common.model.PaymentState;
 import com.sfl.pms.services.payment.common.model.PaymentStateChangeHistoryRecord;
+import com.sfl.pms.services.payment.common.model.acapture.AcapturePaymentProviderMetadata;
 import com.sfl.pms.services.payment.common.model.adyen.AdyenPaymentResult;
 import com.sfl.pms.services.payment.common.model.auth.CustomerPaymentMethodAuthorizationPayment;
 import com.sfl.pms.services.payment.common.model.channel.CustomerPaymentMethodProcessingChannel;
@@ -990,6 +992,18 @@ public class ServicesImplTestHelper {
         paymentMethodSettings.setPaymentSettings(createAcapturePaymentSettings());
         paymentMethodSettings.setAuthorizationId(UUID.randomUUID().toString());
         return paymentMethodSettings;
+    }
+
+    public AcapturePaymentProviderMetadataDto createAcapturePaymentProviderMetadataDto() {
+        final AcapturePaymentProviderMetadataDto dto = new AcapturePaymentProviderMetadataDto();
+        dto.setCheckoutId(UUID.randomUUID().toString());
+        return dto;
+    }
+
+    public void assertAcapturePaymentProviderMetadataDto(final AcapturePaymentProviderMetadata metadata, final AcapturePaymentProviderMetadataDto dto) {
+        assertNotNull(metadata);
+        assertEquals(PaymentProviderType.ACAPTURE, metadata.getProviderType());
+        assertEquals(metadata.getCheckoutId(), dto.getCheckoutId());
     }
 
 

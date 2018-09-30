@@ -30,7 +30,12 @@ public abstract class AbstractPaymentProcessorImpl {
 
     /* Dependencies */
     @Autowired
+    @Qualifier("adyenPaymentOperationsProcessor")
     private PaymentProviderOperationsProcessor adyenPaymentProviderOperationsProcessor;
+
+    @Autowired
+    @Qualifier("acapturePaymentOperationsProcessor")
+    private PaymentProviderOperationsProcessor acapturePaymentProviderOperationsProcessor;
 
     @Autowired
     private PersistenceUtilityService persistenceUtilityService;
@@ -57,6 +62,8 @@ public abstract class AbstractPaymentProcessorImpl {
             case ADYEN: {
                 return adyenPaymentProviderOperationsProcessor;
             }
+            case ACAPTURE:
+                return acapturePaymentProviderOperationsProcessor;
             default: {
                 LOGGER.error("Unknown payment provider type - {}", paymentProviderType);
                 throw new UnknownPaymentProviderTypeException(paymentProviderType);

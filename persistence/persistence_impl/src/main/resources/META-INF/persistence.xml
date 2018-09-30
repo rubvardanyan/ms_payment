@@ -31,6 +31,8 @@
         <class>com.sfl.pms.services.payment.common.model.channel.EncryptedPaymentMethodProcessingChannel</class>
         <class>com.sfl.pms.services.payment.common.model.channel.CustomerPaymentMethodProcessingChannel</class>
         <class>com.sfl.pms.services.payment.common.model.channel.DeferredPaymentMethodProcessingChannel</class>
+        <class>com.sfl.pms.services.payment.common.model.metadata.PaymentProviderMetadata</class>
+        <class>com.sfl.pms.services.payment.common.model.acapture.AcapturePaymentProviderMetadata</class>
 
         <!-- Payment method group -->
         <class>com.sfl.pms.services.payment.method.model.PaymentMethodDefinition</class>
