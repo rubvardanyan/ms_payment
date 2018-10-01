@@ -7,6 +7,7 @@ import com.sfl.pms.services.payment.common.impl.status.PaymentResultStatusMapper
 import com.sfl.pms.services.payment.common.model.Payment;
 import com.sfl.pms.services.payment.common.model.acapture.AcapturePaymentProviderMetadata;
 import com.sfl.pms.services.payment.metadata.acapture.AcapturePaymentProviderMetadataService;
+import com.sfl.pms.services.payment.processing.impl.PaymentResultProcessor;
 import com.sfl.pms.services.payment.provider.impl.acapture.AcapturePaymentProviderIntegrationService;
 import com.sfl.pms.services.payment.redirect.acapture.AcaptureRedirectResultService;
 import com.sfl.pms.services.payment.redirect.model.PaymentProviderRedirectResult;
@@ -49,6 +50,9 @@ public class AcaptureRedirectResultProcessorImpl implements AcaptureRedirectResu
     @Autowired
     private PaymentResultStatusMapper paymentResultStatusMapper;
 
+    @Autowired
+    private PaymentResultProcessor paymentResultProcessor;
+
     /* Constructor */
     //TODO: add tests
     public AcaptureRedirectResultProcessorImpl() {
@@ -72,6 +76,7 @@ public class AcaptureRedirectResultProcessorImpl implements AcaptureRedirectResu
         // Create and process payment result DTO
         final AcapturePaymentResultDto acapturePaymentResultDto = acapturePaymentProviderIntegrationService.checkPaymentStatusForRedirectResult(acaptureRedirectResult);
         acapturePaymentResultDto.setStatus(paymentResultStatusMapper.getPaymentResultStatusForAcapturePaymentStatus(acapturePaymentResultDto.getResultCode()));
+        paymentResultProcessor.processPaymentResult(payment.getId(), null, acaptureRedirectResult.getId(), acapturePaymentResultDto);
         return PaymentProviderRedirectResultState.PROCESSED;
     }
 
