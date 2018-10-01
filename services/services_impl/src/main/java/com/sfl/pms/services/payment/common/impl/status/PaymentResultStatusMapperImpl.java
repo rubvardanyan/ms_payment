@@ -41,4 +41,10 @@ public class PaymentResultStatusMapperImpl implements PaymentResultStatusMapper 
         Assert.notNull(adyenPaymentStatus, "Adyen payment status should not be null");
         return ADYEN_TO_PAYMENT_STATUS_MAPPING.get(adyenPaymentStatus);
     }
+
+    @Override
+    public PaymentResultStatus getPaymentResultStatusForAcapturePaymentStatus(final String acapturePaymentStatus) {
+        //TODO: map status
+        return PaymentResultStatus.PAID;
+    }
 }

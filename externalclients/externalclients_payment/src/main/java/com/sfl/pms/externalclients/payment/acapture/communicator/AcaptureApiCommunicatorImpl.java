@@ -5,7 +5,9 @@ import com.sfl.pms.externalclients.payment.acapture.model.AcaptureApiPaths;
 import com.sfl.pms.externalclients.payment.acapture.model.AcaptureAttributeMappings;
 import com.sfl.pms.externalclients.payment.acapture.model.authentication.AcaptureAuthenticationModel;
 import com.sfl.pms.externalclients.payment.acapture.model.payment.AcaptureAmountModel;
+import com.sfl.pms.externalclients.payment.acapture.model.request.CheckPaymentStatusRequest;
 import com.sfl.pms.externalclients.payment.acapture.model.request.CreateCheckoutRequest;
+import com.sfl.pms.externalclients.payment.acapture.model.response.CheckPaymentStatusResponse;
 import com.sfl.pms.externalclients.payment.acapture.model.response.CreateCheckoutResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,10 +59,12 @@ public class AcaptureApiCommunicatorImpl implements AcaptureApiCommunicator {
     @Override
     public CreateCheckoutResponse createCheckout(@Nonnull final CreateCheckoutRequest request) {
         assertCreateCheckoutRequest(request);
+        LOGGER.debug("Submitting checkout request with model - {}", request);
         final MultiValueMap<String, String> valueMap = getValueMapWithAuthorizationValues(request.getAuthenticationModel());
         valueMap.add(AcaptureAttributeMappings.AMOUNT, AMOUNT_FORMATTER.format(request.getAmountModel().getAmount()));
         valueMap.add(AcaptureAttributeMappings.CURRENCY, request.getAmountModel().getCurrency());
         valueMap.add(AcaptureAttributeMappings.PAYMENT_TYPE, request.getPaymentType().getCode());
+        valueMap.add(AcaptureAttributeMappings.MERCHANT_INVOICE_ID, request.getPaymentUuid());
         final HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(valueMap, getDefaultHeaders());
         final ResponseEntity<CreateCheckoutResponse> responseEntity = restClient.postForEntity(url + AcaptureApiPaths.CHECKOUTS, entity, CreateCheckoutResponse.class);
         if(responseEntity.getStatusCode() != HttpStatus.OK) {
@@ -71,13 +75,33 @@ public class AcaptureApiCommunicatorImpl implements AcaptureApiCommunicator {
         return responseEntity.getBody();
     }
 
+    @Nonnull
+    @Override
+    public CheckPaymentStatusResponse checkPaymentStatus(@Nonnull final CheckPaymentStatusRequest request) {
+        assertCheckPaymentStatusRequest(request);
+        LOGGER.debug("Submitting check payment status request with model - {}", request);
+        final MultiValueMap<String, String> valueMap = getValueMapWithAuthorizationValues(request.getAuthenticationModel());
+        final HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(valueMap, getDefaultHeaders());
+        final ResponseEntity<CheckPaymentStatusResponse> responseEntity = restClient.postForEntity(url + request.getResourcePath(), entity, CheckPaymentStatusResponse.class);
+        if(responseEntity.getStatusCode() != HttpStatus.OK) {
+            LOGGER.error("Invalid response status returned - {}", responseEntity);
+            throw new IllegalStateException("Invalid response status returned - " + responseEntity);
+        }
+        return responseEntity.getBody();
+    }
+
     /* Utility methods */
     private void assertCreateCheckoutRequest(final CreateCheckoutRequest request) {
-        LOGGER.debug("Submitting checkout request with model - {}", request);
         Assert.notNull(request, "Checkout request should not be null");
         Assert.notNull(request.getPaymentType(), "Payment type should not be null in checkout request");
         assertAuthenticationModel(request.getAuthenticationModel());
         assertAmountModel(request.getAmountModel());
+    }
+
+    private void assertCheckPaymentStatusRequest(final CheckPaymentStatusRequest request) {
+        Assert.notNull(request, "Check payment status request should not be null");
+        Assert.notNull(request.getResourcePath(), "Resource path in check payment status request should not be null ");
+        assertAuthenticationModel(request.getAuthenticationModel());
     }
 
     private void assertAuthenticationModel(final AcaptureAuthenticationModel authenticationModel) {

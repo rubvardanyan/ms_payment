@@ -6,7 +6,7 @@ import com.sfl.pms.services.payment.common.dto.acapture.AcapturePaymentProviderM
 import com.sfl.pms.services.payment.common.model.Payment;
 import com.sfl.pms.services.payment.common.model.PaymentResult;
 import com.sfl.pms.services.payment.common.model.channel.ProvidedPaymentMethodProcessingChannel;
-import com.sfl.pms.services.payment.provider.acapture.AcapturePaymentProviderIntegrationService;
+import com.sfl.pms.services.payment.provider.impl.acapture.AcapturePaymentProviderIntegrationService;
 import com.sfl.pms.services.payment.settings.acapture.AcapturePaymentSettingsService;
 import com.sfl.pms.services.payment.settings.model.acapture.AcapturePaymentSettings;
 import org.slf4j.Logger;

@@ -23,6 +23,7 @@
         <class>com.sfl.pms.services.payment.common.model.Payment</class>
         <class>com.sfl.pms.services.payment.common.model.PaymentResult</class>
         <class>com.sfl.pms.services.payment.common.model.adyen.AdyenPaymentResult</class>
+        <class>com.sfl.pms.services.payment.common.model.acapture.AcapturePaymentResult</class>
         <class>com.sfl.pms.services.payment.common.model.PaymentStateChangeHistoryRecord</class>
         <class>com.sfl.pms.services.payment.common.model.order.OrderPayment</class>
         <class>com.sfl.pms.services.payment.common.model.auth.CustomerPaymentMethodAuthorizationPayment</class>

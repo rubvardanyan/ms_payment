@@ -9,7 +9,7 @@ package com.sfl.pms.externalclients.payment.acapture.model;
 public final class AcaptureApiPaths {
 
     /* Constants */
-    public static final String CHECKOUTS = "checkouts";
+    public static final String CHECKOUTS = "/v1/checkouts";
 
     /* Private constructor to prevent instantiation */
     public AcaptureApiPaths() {

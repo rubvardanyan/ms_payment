@@ -4,9 +4,8 @@ import com.sfl.pms.services.payment.common.PaymentService;
 import com.sfl.pms.services.payment.common.dto.acapture.AcapturePaymentProviderMetadataDto;
 import com.sfl.pms.services.payment.common.model.Payment;
 import com.sfl.pms.services.payment.common.model.channel.ProvidedPaymentMethodProcessingChannel;
-import com.sfl.pms.services.payment.common.model.order.OrderPayment;
 import com.sfl.pms.services.payment.method.model.PaymentMethodType;
-import com.sfl.pms.services.payment.provider.acapture.AcapturePaymentProviderIntegrationService;
+import com.sfl.pms.services.payment.provider.impl.acapture.AcapturePaymentProviderIntegrationService;
 import com.sfl.pms.services.payment.settings.acapture.AcapturePaymentSettingsService;
 import com.sfl.pms.services.payment.settings.model.acapture.AcapturePaymentSettings;
 import com.sfl.pms.services.test.AbstractServicesUnitTest;
@@ -17,7 +16,6 @@ import org.junit.Test;
 import java.util.UUID;
 
 import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.find;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 

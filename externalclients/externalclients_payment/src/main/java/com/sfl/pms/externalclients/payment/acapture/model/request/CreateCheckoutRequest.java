@@ -24,6 +24,8 @@ public class CreateCheckoutRequest extends AbstractAcaptureApiCommunicatorModel 
 
     private PaymentType paymentType;
 
+    private String paymentUuid;
+
     /* Constructor */
     public CreateCheckoutRequest() {
     }
@@ -53,6 +55,14 @@ public class CreateCheckoutRequest extends AbstractAcaptureApiCommunicatorModel 
         this.paymentType = paymentType;
     }
 
+    public String getPaymentUuid() {
+        return paymentUuid;
+    }
+
+    public void setPaymentUuid(final String paymentUuid) {
+        this.paymentUuid = paymentUuid;
+    }
+
     /* Equals, HashCode and ToString */
     @Override
     public boolean equals(final Object o) {
@@ -67,6 +77,7 @@ public class CreateCheckoutRequest extends AbstractAcaptureApiCommunicatorModel 
                 .append(authenticationModel, that.authenticationModel)
                 .append(amountModel, that.amountModel)
                 .append(paymentType, that.paymentType)
+                .append(paymentUuid, that.paymentUuid)
                 .isEquals();
     }
 
@@ -77,6 +88,7 @@ public class CreateCheckoutRequest extends AbstractAcaptureApiCommunicatorModel 
                 .append(authenticationModel)
                 .append(amountModel)
                 .append(paymentType)
+                .append(paymentUuid)
                 .toHashCode();
     }
 
@@ -86,6 +98,7 @@ public class CreateCheckoutRequest extends AbstractAcaptureApiCommunicatorModel 
                 .append("authenticationModel", authenticationModel)
                 .append("amountModel", amountModel)
                 .append("paymentType", paymentType)
+                .append("paymentUuid", paymentUuid)
                 .toString();
     }
 }

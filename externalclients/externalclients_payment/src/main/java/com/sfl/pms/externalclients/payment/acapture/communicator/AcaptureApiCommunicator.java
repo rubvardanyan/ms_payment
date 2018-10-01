@@ -1,6 +1,8 @@
 package com.sfl.pms.externalclients.payment.acapture.communicator;
 
+import com.sfl.pms.externalclients.payment.acapture.model.request.CheckPaymentStatusRequest;
 import com.sfl.pms.externalclients.payment.acapture.model.request.CreateCheckoutRequest;
+import com.sfl.pms.externalclients.payment.acapture.model.response.CheckPaymentStatusResponse;
 import com.sfl.pms.externalclients.payment.acapture.model.response.CreateCheckoutResponse;
 
 import javax.annotation.Nonnull;
@@ -15,4 +17,7 @@ public interface AcaptureApiCommunicator {
 
     @Nonnull
     CreateCheckoutResponse createCheckout(@Nonnull final CreateCheckoutRequest request);
+
+    @Nonnull
+    CheckPaymentStatusResponse checkPaymentStatus(@Nonnull final CheckPaymentStatusRequest request);
 }

@@ -1,7 +1,5 @@
 package com.sfl.pms.services.payment.common.impl.metadata;
 
-import com.sfl.pms.services.payment.common.model.acapture.AcapturePaymentProviderMetadata;
-
 /**
  * User: Ruben Vardanyan
  * Company: SFL LLC

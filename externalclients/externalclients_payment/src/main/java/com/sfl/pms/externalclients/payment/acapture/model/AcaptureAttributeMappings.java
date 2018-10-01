@@ -18,6 +18,7 @@ public final class AcaptureAttributeMappings {
     public static final String AMOUNT = "amount";
     public static final String CURRENCY = "currency";
     public static final String PAYMENT_TYPE = "paymentType";
+    public static final String MERCHANT_INVOICE_ID = "merchantInvoiceId";
 
 
     /* Private constructor to prevent instantiation */

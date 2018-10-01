@@ -1,4 +1,4 @@
-package com.sfl.pms.services.payment.provider.acapture;
+package com.sfl.pms.services.payment.provider.impl.acapture;
 
 import com.sfl.pms.externalclients.payment.acapture.communicator.AcaptureApiCommunicator;
 import com.sfl.pms.externalclients.payment.acapture.model.AcaptureStatusCodes;
@@ -135,6 +135,7 @@ public class AcapturePaymentProviderIntegrationServiceImplTest extends AbstractS
         createCheckoutRequest.setPaymentType(PaymentType.PRE_AUTHORIZATION);
         createCheckoutRequest.setAuthenticationModel(new AcaptureAuthenticationModel(paymentMethodSettings.getAuthorizationId()));
         createCheckoutRequest.setAmountModel(new AcaptureAmountModel(payment.getCurrency().getCode(), payment.getAmount()));
+        createCheckoutRequest.setPaymentUuid(payment.getUuId());
         final CreateCheckoutResponse createCheckoutResponse = new CreateCheckoutResponse();
         createCheckoutResponse.setCheckoutId(UUID.randomUUID().toString());
         createCheckoutResponse.setResult(new AcaptureResultModel(AcaptureStatusCodes.CHECKOUT_SUCCESSFULLY_DELETED.getCode(), "Result description"));
@@ -173,6 +174,7 @@ public class AcapturePaymentProviderIntegrationServiceImplTest extends AbstractS
         createCheckoutRequest.setPaymentType(PaymentType.PRE_AUTHORIZATION);
         createCheckoutRequest.setAuthenticationModel(new AcaptureAuthenticationModel(paymentMethodSettings.getAuthorizationId()));
         createCheckoutRequest.setAmountModel(new AcaptureAmountModel(payment.getCurrency().getCode(), payment.getAmount()));
+        createCheckoutRequest.setPaymentUuid(payment.getUuId());
         final CreateCheckoutResponse createCheckoutResponse = new CreateCheckoutResponse();
         createCheckoutResponse.setCheckoutId(UUID.randomUUID().toString());
         createCheckoutResponse.setResult(new AcaptureResultModel(AcaptureStatusCodes.CHECKOUT_SUCCESSFULLY_CREATED.getCode(), "Result description"));

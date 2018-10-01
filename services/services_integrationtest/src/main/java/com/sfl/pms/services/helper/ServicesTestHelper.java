@@ -1,6 +1,7 @@
 package com.sfl.pms.services.helper;
 
 import com.sfl.pms.externalclients.payment.adyen.model.datatypes.AdyenPaymentStatus;
+import com.sfl.pms.persistence.repositories.payment.common.metadata.acapture.AcapturePaymentProviderMetadataRepository;
 import com.sfl.pms.persistence.repositories.payment.method.acapture.AcapturePaymentMethodSettingsRepository;
 import com.sfl.pms.persistence.repositories.payment.settings.acapture.AcapturePaymentSettingsRepository;
 import com.sfl.pms.persistence.utility.PersistenceUtilityService;
@@ -20,15 +21,18 @@ import com.sfl.pms.services.order.model.OrderStateChangeHistoryRecord;
 import com.sfl.pms.services.order.model.payment.OrderPaymentChannel;
 import com.sfl.pms.services.order.model.payment.OrderPaymentChannelType;
 import com.sfl.pms.services.order.model.payment.provider.OrderProviderPaymentChannel;
+import com.sfl.pms.services.payment.common.PaymentService;
 import com.sfl.pms.services.payment.common.auth.CustomerPaymentMethodAuthorizationPaymentService;
 import com.sfl.pms.services.payment.common.dto.PaymentDto;
 import com.sfl.pms.services.payment.common.dto.PaymentStateChangeHistoryRecordDto;
+import com.sfl.pms.services.payment.common.dto.acapture.AcapturePaymentProviderMetadataDto;
 import com.sfl.pms.services.payment.common.dto.adyen.AdyenPaymentResultDto;
 import com.sfl.pms.services.payment.common.dto.auth.CustomerPaymentMethodAuthorizationPaymentDto;
 import com.sfl.pms.services.payment.common.dto.channel.*;
 import com.sfl.pms.services.payment.common.dto.order.OrderPaymentDto;
 import com.sfl.pms.services.payment.common.dto.order.request.*;
 import com.sfl.pms.services.payment.common.model.*;
+import com.sfl.pms.services.payment.common.model.acapture.AcapturePaymentProviderMetadata;
 import com.sfl.pms.services.payment.common.model.adyen.AdyenPaymentResult;
 import com.sfl.pms.services.payment.common.model.auth.CustomerPaymentMethodAuthorizationPayment;
 import com.sfl.pms.services.payment.common.model.channel.*;
@@ -256,6 +260,12 @@ public class ServicesTestHelper {
 
     @Autowired
     private AcapturePaymentMethodSettingsRepository acapturePaymentMethodSettingsRepository;
+
+    @Autowired
+    private AcapturePaymentProviderMetadataRepository acapturePaymentProviderMetadataRepository;
+
+    @Autowired
+    private PaymentService paymentService;
 
     /* Constructors */
     public ServicesTestHelper() {
@@ -1243,6 +1253,13 @@ public class ServicesTestHelper {
         paymentMethodSettings.setPaymentSettings(createAcapturePaymentSettings());
         paymentMethodSettings.setAuthorizationId(UUID.randomUUID().toString());
         return acapturePaymentMethodSettingsRepository.save(paymentMethodSettings);
+    }
+
+    public AcapturePaymentProviderMetadata createAcapturePaymentProviderMetadata() {
+        final AcapturePaymentProviderMetadataDto metadataDto = new AcapturePaymentProviderMetadataDto(UUID.randomUUID().toString());
+        final OrderPayment orderPayment = createOrderPayment();
+        final Payment payment = paymentService.updatePaymentProviderMetadata(orderPayment.getId(), metadataDto);
+        return (AcapturePaymentProviderMetadata) payment.getPaymentProcessingChannel().getPaymentProviderMetadata();
     }
 
     /* Acapture redirect result */
