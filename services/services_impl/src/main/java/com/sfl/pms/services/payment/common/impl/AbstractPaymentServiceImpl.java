@@ -43,6 +43,10 @@ public abstract class AbstractPaymentServiceImpl<T extends Payment> implements A
     private PaymentResultHandler adyenPaymentResultHandler;
 
     @Autowired
+    @Qualifier("acapturePaymentResultHandler")
+    private PaymentResultHandler acapturePaymentResultHandler;
+
+    @Autowired
     private PaymentResultRepository paymentResultRepository;
 
     @Autowired
@@ -173,6 +177,8 @@ public abstract class AbstractPaymentServiceImpl<T extends Payment> implements A
             case ADYEN: {
                 return adyenPaymentResultHandler;
             }
+            case ACAPTURE:
+                return acapturePaymentResultHandler;
             default: {
                 LOGGER.error("Unknown payment provider type - {}", paymentProviderType);
                 throw new UnknownPaymentProviderTypeException(paymentProviderType);

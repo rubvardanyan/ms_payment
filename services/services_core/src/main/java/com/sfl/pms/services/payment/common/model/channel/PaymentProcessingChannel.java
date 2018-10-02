@@ -2,6 +2,7 @@ package com.sfl.pms.services.payment.common.model.channel;
 
 import com.sfl.pms.services.common.model.AbstractDomainEntityModel;
 import com.sfl.pms.services.payment.common.model.Payment;
+import com.sfl.pms.services.payment.common.model.metadata.PaymentProviderMetadata;
 import com.sfl.pms.services.payment.method.model.PaymentMethodType;
 import com.sfl.pms.services.payment.provider.model.PaymentProviderIntegrationType;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -37,6 +38,10 @@ public abstract class PaymentProcessingChannel extends AbstractDomainEntityModel
     @Column(name = "payment_provider_integration_type", nullable = false)
     private PaymentProviderIntegrationType paymentProviderIntegrationType;
 
+    @OneToOne(optional = true, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "payment_provider_metadata_id", nullable = true, unique = false)
+    private PaymentProviderMetadata paymentProviderMetadata;
+
     /* Constructors */
     public PaymentProcessingChannel() {
     }
@@ -66,6 +71,14 @@ public abstract class PaymentProcessingChannel extends AbstractDomainEntityModel
         this.paymentProviderIntegrationType = paymentProviderIntegrationType;
     }
 
+    public PaymentProviderMetadata getPaymentProviderMetadata() {
+        return paymentProviderMetadata;
+    }
+
+    public void setPaymentProviderMetadata(final PaymentProviderMetadata paymentProviderMetadata) {
+        this.paymentProviderMetadata = paymentProviderMetadata;
+    }
+
     /* Abstract methods */
     public abstract PaymentMethodType getPaymentMethodTypeIfDefined();
 
@@ -84,6 +97,7 @@ public abstract class PaymentProcessingChannel extends AbstractDomainEntityModel
         builder.append(this.getType(), that.getType());
         builder.append(this.getPaymentProviderIntegrationType(), that.getPaymentProviderIntegrationType());
         builder.append(getIdOrNull(this.getPayment()), getIdOrNull(that.getPayment()));
+        builder.append(getIdOrNull(this.getPaymentProviderMetadata()), getIdOrNull(that.getPaymentProviderMetadata()));
         return builder.isEquals();
     }
 
@@ -94,6 +108,7 @@ public abstract class PaymentProcessingChannel extends AbstractDomainEntityModel
         builder.append(this.getType());
         builder.append(this.getPaymentProviderIntegrationType());
         builder.append(getIdOrNull(this.getPayment()));
+        builder.append(getIdOrNull(this.getPaymentProviderMetadata()));
         return builder.build();
     }
 
@@ -105,6 +120,7 @@ public abstract class PaymentProcessingChannel extends AbstractDomainEntityModel
         builder.append("type", this.getType());
         builder.append("paymentProviderIntegrationType", this.getPaymentProviderIntegrationType());
         builder.append("payment", getIdOrNull(this.getPayment()));
+        builder.append("paymentProviderMetadata", getIdOrNull(this.getPaymentProviderMetadata()));
         return builder.build();
     }
 }

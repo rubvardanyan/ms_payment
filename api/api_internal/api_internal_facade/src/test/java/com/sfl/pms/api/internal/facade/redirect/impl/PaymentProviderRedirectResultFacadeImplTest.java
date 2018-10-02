@@ -4,17 +4,22 @@ import com.sfl.pms.api.internal.facade.test.AbstractFacadeUnitTest;
 import com.sfl.pms.core.api.internal.model.common.result.ErrorType;
 import com.sfl.pms.core.api.internal.model.common.result.ResultResponseModel;
 import com.sfl.pms.core.api.internal.model.redirect.PaymentProviderRedirectResultStateClientType;
+import com.sfl.pms.core.api.internal.model.redirect.request.CreateAcaptureRedirectResultRequest;
 import com.sfl.pms.core.api.internal.model.redirect.request.CreateAdyenRedirectResultRequest;
 import com.sfl.pms.core.api.internal.model.redirect.request.GetPaymentProviderRedirectResultStatusRequest;
+import com.sfl.pms.core.api.internal.model.redirect.response.CreateAcaptureRedirectResultResponse;
 import com.sfl.pms.core.api.internal.model.redirect.response.CreateAdyenRedirectResultResponse;
 import com.sfl.pms.core.api.internal.model.redirect.response.GetPaymentProviderRedirectResultStatusResponse;
 import com.sfl.pms.services.payment.common.model.Payment;
 import com.sfl.pms.services.payment.redirect.PaymentProviderRedirectResultService;
+import com.sfl.pms.services.payment.redirect.acapture.AcaptureRedirectResultService;
 import com.sfl.pms.services.payment.redirect.adyen.AdyenRedirectResultService;
-import com.sfl.pms.services.payment.redirect.dto.redirect.AdyenRedirectResultDto;
+import com.sfl.pms.services.payment.redirect.dto.redirect.acapture.AcaptureRedirectResultDto;
+import com.sfl.pms.services.payment.redirect.dto.redirect.adyen.AdyenRedirectResultDto;
 import com.sfl.pms.services.payment.redirect.event.StartPaymentProviderRedirectResultProcessingEvent;
 import com.sfl.pms.services.payment.redirect.model.PaymentProviderRedirectResult;
 import com.sfl.pms.services.payment.redirect.model.PaymentProviderRedirectResultState;
+import com.sfl.pms.services.payment.redirect.model.acapture.AcaptureRedirectResult;
 import com.sfl.pms.services.payment.redirect.model.adyen.AdyenRedirectResult;
 import com.sfl.pms.services.system.event.ApplicationEventDistributionService;
 import org.easymock.Mock;
@@ -24,6 +29,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.UUID;
 
 import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
@@ -43,6 +49,9 @@ public class PaymentProviderRedirectResultFacadeImplTest extends AbstractFacadeU
 
     @Mock
     private AdyenRedirectResultService adyenRedirectResultService;
+
+    @Mock
+    private AcaptureRedirectResultService acaptureRedirectResultService;
 
     @Mock
     private ApplicationEventDistributionService applicationEventDistributionService;
@@ -185,6 +194,69 @@ public class PaymentProviderRedirectResultFacadeImplTest extends AbstractFacadeU
         assertNotNull(result.getResponse());
         final CreateAdyenRedirectResultResponse response = result.getResponse();
         assertEquals(adyenRedirectResult.getUuId(), response.getPaymentProviderRedirectResultUuId());
+        // Verify
+        verifyAll();
+    }
+
+    @Test
+    public void testCreateAcaptureRedirectResultWithInvalidArguments() {
+        // Reset
+        resetAll();
+        // Replay
+        replayAll();
+        // Run test scenario
+        try {
+            paymentProviderRedirectFacade.createAcaptureRedirectResult(null);
+            fail("Exception should be thrown");
+        } catch (IllegalArgumentException ex) {
+            //success
+        }
+        // Verify
+        verifyAll();
+    }
+
+    @Test
+    public void testCreateAcaptureRedirectResultWithValidationErrors() {
+        // Test data
+        final CreateAcaptureRedirectResultRequest request = new CreateAcaptureRedirectResultRequest(null, "");
+        // Reset
+        resetAll();
+        // Replay
+        replayAll();
+        // Run test scenario
+        final ResultResponseModel<CreateAcaptureRedirectResultResponse> response = paymentProviderRedirectFacade.createAcaptureRedirectResult(request);
+        assertEquals(2, response.getErrors().size());
+        assertValidationErrors(response.getErrors(), new HashSet<>(Arrays.asList(
+                ErrorType.PAYMENT_PROVIDER_REDIRECT_RESULT_MISSING_CHECKOUT_ID,
+                ErrorType.PAYMENT_PROVIDER_REDIRECT_RESULT_MISSING_RESOURCE_PATH
+        )));
+        // Verify
+        verifyAll();
+    }
+
+    @Test
+    public void testCreateAcaptureRedirectResult() {
+        // Test data
+        final CreateAcaptureRedirectResultRequest request = new CreateAcaptureRedirectResultRequest(UUID.randomUUID().toString(), UUID.randomUUID().toString());
+        final AcaptureRedirectResultDto acaptureRedirectResultDto = new AcaptureRedirectResultDto(request.getCheckoutId(), request.getResourcePath());
+        final AcaptureRedirectResult acaptureRedirectResult = new AcaptureRedirectResult();
+        acaptureRedirectResult.setCheckoutId(acaptureRedirectResultDto.getCheckoutId());
+        acaptureRedirectResult.setResourcePath(acaptureRedirectResultDto.getResourcePath());
+        acaptureRedirectResult.setId(665L);
+        acaptureRedirectResult.setUuId(UUID.randomUUID().toString());
+        // Reset
+        resetAll();
+        // Expectations
+        expect(acaptureRedirectResultService.createPaymentProviderRedirectResult(acaptureRedirectResultDto)).andReturn(acaptureRedirectResult);
+        applicationEventDistributionService.publishAsynchronousEvent(new StartPaymentProviderRedirectResultProcessingEvent(acaptureRedirectResult.getId()));
+        // Replay
+        replayAll();
+        // Run test scenario
+        final ResultResponseModel<CreateAcaptureRedirectResultResponse> result = paymentProviderRedirectFacade.createAcaptureRedirectResult(request);
+        assertNotNull(result);
+        assertEquals(0, result.getErrors().size());
+        assertNotNull(result.getResponse());
+        assertEquals(acaptureRedirectResult.getUuId(), result.getResponse().getPaymentProviderRedirectResultUuId());
         // Verify
         verifyAll();
     }

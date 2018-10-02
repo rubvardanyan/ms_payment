@@ -20,6 +20,7 @@ import com.sfl.pms.services.system.concurrency.ScheduledTaskExecutorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.util.Assert;
 
 import javax.annotation.Nonnull;
@@ -50,7 +51,12 @@ public abstract class AbstractPaymentTypeSpecificOperationsProcessorImpl impleme
     private PaymentService paymentService;
 
     @Autowired
+    @Qualifier("adyenPaymentOperationsProcessor")
     private PaymentProviderOperationsProcessor adyenPaymentProviderOperationsProcessor;
+
+    @Autowired
+    @Qualifier("acapturePaymentOperationsProcessor")
+    private PaymentProviderOperationsProcessor acapturePaymentProviderOperationsProcessor;
 
     @Autowired
     private CustomerPaymentMethodsSynchronizationService customerPaymentMethodsSynchronizationService;
@@ -120,6 +126,8 @@ public abstract class AbstractPaymentTypeSpecificOperationsProcessorImpl impleme
             case ADYEN: {
                 return adyenPaymentProviderOperationsProcessor;
             }
+            case ACAPTURE:
+                return acapturePaymentProviderOperationsProcessor;
             default: {
                 LOGGER.error("Unknown payment provider type - {}", paymentProviderType);
                 throw new UnknownPaymentProviderTypeException(paymentProviderType);

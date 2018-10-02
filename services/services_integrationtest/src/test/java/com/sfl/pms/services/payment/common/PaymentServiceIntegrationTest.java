@@ -3,10 +3,13 @@ package com.sfl.pms.services.payment.common;
 import com.sfl.pms.services.customer.model.Customer;
 import com.sfl.pms.services.payment.common.dto.PaymentSearchParameters;
 import com.sfl.pms.services.payment.common.dto.PaymentStateChangeHistoryRecordDto;
+import com.sfl.pms.services.payment.common.dto.acapture.AcapturePaymentProviderMetadataDto;
 import com.sfl.pms.services.payment.common.dto.order.OrderPaymentDto;
 import com.sfl.pms.services.payment.common.model.Payment;
 import com.sfl.pms.services.payment.common.model.PaymentState;
 import com.sfl.pms.services.payment.common.model.PaymentStateChangeHistoryRecord;
+import com.sfl.pms.services.payment.common.model.acapture.AcapturePaymentProviderMetadata;
+import com.sfl.pms.services.payment.common.model.order.OrderPayment;
 import com.sfl.pms.services.payment.method.model.PaymentMethodType;
 import com.sfl.pms.services.payment.provider.model.PaymentProviderType;
 import org.joda.time.DateTime;
@@ -14,10 +17,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -324,6 +324,24 @@ public class PaymentServiceIntegrationTest extends AbstractPaymentServiceIntegra
         parameters.setPaymentState(PaymentState.PAID);
         customerIdsCount = paymentService.getCustomersCountForPaymentSearchParameters(parameters);
         assertCustomerIdsCount(customerIdsCount, new HashSet<>(Arrays.asList(paidOrderPaymentCustomer)));
+    }
+
+    @Test
+    public void  testUpdatePaymentProviderMetadata() {
+        if(!isEnablePaymentIntegrationTests()) {
+            return;
+        }
+        //Create payment
+        final OrderPayment payment = getServicesTestHelper().createOrderPayment();
+        final String checkoutId = UUID.randomUUID().toString();
+        final AcapturePaymentProviderMetadataDto metadataDto = new AcapturePaymentProviderMetadataDto(checkoutId);
+        paymentService.updatePaymentProviderMetadata(payment.getId(), metadataDto);
+        flushAndClear();
+        // Reload payment
+        final Payment result = paymentService.getPaymentById(payment.getId());
+        assertTrue(result.getPaymentProcessingChannel().getPaymentProviderMetadata() instanceof AcapturePaymentProviderMetadata);
+        final AcapturePaymentProviderMetadata acaptureMetadata = (AcapturePaymentProviderMetadata) result.getPaymentProcessingChannel().getPaymentProviderMetadata();
+        assertEquals(checkoutId, acaptureMetadata.getCheckoutId());
     }
 
     /* Utility methods */

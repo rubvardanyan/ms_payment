@@ -26,7 +26,7 @@ import com.sfl.pms.services.payment.notification.dto.PaymentProviderNotification
 import com.sfl.pms.services.payment.notification.model.PaymentProviderNotificationRequest;
 import com.sfl.pms.services.payment.notification.model.PaymentProviderNotificationRequestState;
 import com.sfl.pms.services.payment.provider.model.PaymentProviderType;
-import com.sfl.pms.services.payment.redirect.dto.redirect.AdyenRedirectResultDto;
+import com.sfl.pms.services.payment.redirect.dto.redirect.adyen.AdyenRedirectResultDto;
 import com.sfl.pms.services.payment.redirect.model.adyen.AdyenRedirectResult;
 import com.sfl.pms.services.payment.settings.dto.adyen.AdyenPaymentSettingsDto;
 import com.sfl.pms.services.payment.settings.model.adyen.AdyenPaymentSettings;

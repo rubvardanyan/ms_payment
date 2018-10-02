@@ -9,7 +9,7 @@ import com.sfl.pms.services.payment.common.order.OrderPaymentService;
 import com.sfl.pms.services.payment.method.model.PaymentMethodType;
 import com.sfl.pms.services.payment.method.model.adyen.AdyenPaymentMethodType;
 import com.sfl.pms.services.payment.redirect.adyen.AdyenRedirectResultService;
-import com.sfl.pms.services.payment.redirect.dto.redirect.AdyenRedirectResultDto;
+import com.sfl.pms.services.payment.redirect.dto.redirect.adyen.AdyenRedirectResultDto;
 import com.sfl.pms.services.payment.redirect.model.PaymentProviderRedirectResultState;
 import com.sfl.pms.services.payment.redirect.model.adyen.AdyenRedirectResult;
 import com.sfl.pms.services.test.AbstractServiceIntegrationTest;

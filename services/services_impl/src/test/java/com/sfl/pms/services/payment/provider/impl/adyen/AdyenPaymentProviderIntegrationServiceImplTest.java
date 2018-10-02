@@ -20,7 +20,7 @@ import com.sfl.pms.services.payment.provider.dto.AdyenRedirectUrlGenerationDto;
 import com.sfl.pms.services.payment.provider.model.PaymentProviderIntegrationType;
 import com.sfl.pms.services.payment.provider.model.PaymentProviderType;
 import com.sfl.pms.services.payment.provider.model.adyen.AdyenRecurringContractType;
-import com.sfl.pms.services.payment.redirect.dto.redirect.AdyenRedirectResultDto;
+import com.sfl.pms.services.payment.redirect.dto.redirect.adyen.AdyenRedirectResultDto;
 import com.sfl.pms.services.payment.settings.adyen.AdyenPaymentSettingsService;
 import com.sfl.pms.services.payment.settings.model.adyen.AdyenPaymentSettings;
 import com.sfl.pms.services.test.AbstractServicesUnitTest;

@@ -13,7 +13,7 @@ import com.sfl.pms.services.payment.method.model.adyen.AdyenPaymentMethodType;
 import com.sfl.pms.services.payment.processing.impl.PaymentResultProcessor;
 import com.sfl.pms.services.payment.provider.adyen.AdyenPaymentProviderIntegrationService;
 import com.sfl.pms.services.payment.redirect.adyen.AdyenRedirectResultService;
-import com.sfl.pms.services.payment.redirect.dto.redirect.AdyenRedirectResultDto;
+import com.sfl.pms.services.payment.redirect.dto.redirect.adyen.AdyenRedirectResultDto;
 import com.sfl.pms.services.payment.redirect.model.PaymentProviderRedirectResult;
 import com.sfl.pms.services.payment.redirect.model.PaymentProviderRedirectResultState;
 import com.sfl.pms.services.payment.redirect.model.adyen.AdyenRedirectResult;

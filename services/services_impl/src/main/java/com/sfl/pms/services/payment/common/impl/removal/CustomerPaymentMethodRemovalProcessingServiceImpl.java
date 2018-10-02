@@ -10,6 +10,7 @@ import com.sfl.pms.services.payment.provider.model.PaymentProviderType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -27,6 +28,7 @@ public class CustomerPaymentMethodRemovalProcessingServiceImpl implements Custom
 
     /* Dependencies */
     @Autowired
+    @Qualifier("adyenPaymentOperationsProcessor")
     private PaymentProviderOperationsProcessor adyenPaymentProviderOperationsProcessor;
 
     @Autowired

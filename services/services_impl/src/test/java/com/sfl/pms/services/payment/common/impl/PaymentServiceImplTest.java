@@ -5,10 +5,13 @@ import com.sfl.pms.persistence.repositories.payment.common.PaymentRepository;
 import com.sfl.pms.services.payment.common.AbstractPaymentService;
 import com.sfl.pms.services.payment.common.dto.PaymentSearchParameters;
 import com.sfl.pms.services.payment.common.dto.PaymentStateChangeHistoryRecordDto;
+import com.sfl.pms.services.payment.common.dto.acapture.AcapturePaymentProviderMetadataDto;
 import com.sfl.pms.services.payment.common.exception.PaymentNotFoundForIdException;
+import com.sfl.pms.services.payment.common.impl.metadata.AcapturePaymentProviderMetadataHandler;
 import com.sfl.pms.services.payment.common.model.Payment;
 import com.sfl.pms.services.payment.common.model.PaymentState;
 import com.sfl.pms.services.payment.common.model.PaymentStateChangeHistoryRecord;
+import com.sfl.pms.services.payment.common.model.acapture.AcapturePaymentProviderMetadata;
 import com.sfl.pms.services.payment.method.model.PaymentMethodType;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
@@ -19,6 +22,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
@@ -37,6 +41,9 @@ public class PaymentServiceImplTest extends AbstractPaymentServiceImplTest<Payme
 
     @Mock
     private PaymentRepository paymentRepository;
+
+    @Mock
+    private AcapturePaymentProviderMetadataHandler acapturePaymentProviderMetadataHandler;
 
     /* Constructors */
     public PaymentServiceImplTest() {
@@ -352,6 +359,53 @@ public class PaymentServiceImplTest extends AbstractPaymentServiceImplTest<Payme
         final Payment result = paymentService.getPaymentByIdWithPessimisticWriteLock(paymentID);
         assertNotNull(result);
         assertEquals(payment, result);
+        // Verify
+        verifyAll();
+    }
+
+    @Test
+    public void testUpdatePaymentProviderMetadataWithInvalidArguments() {
+        // Reset
+        resetAll();
+        // Replay
+        replayAll();
+        // Run test scenario
+        try {
+            paymentService.updatePaymentProviderMetadata(null, new AcapturePaymentProviderMetadataDto());
+            fail("Exception should be thrown");
+        } catch (final IllegalArgumentException ex) {
+            // Expected
+        }
+        try {
+            paymentService.updatePaymentProviderMetadata(123L, null);
+            fail("Exception should be thrown");
+        } catch (final IllegalArgumentException ex) {
+            // Expected
+        }
+        // Verify
+        verifyAll();
+    }
+
+    @Test
+    public void testUpdatePaymentProviderMetadata() {
+        // Test data
+        final Long paymentId = 123L;
+        final Payment payment = getServicesImplTestHelper().createOrderPayment();
+        payment.setPaymentProcessingChannel(getServicesImplTestHelper().createProvidedPaymentMethodProcessingChannel());
+        final AcapturePaymentProviderMetadataDto dto = getServicesImplTestHelper().createAcapturePaymentProviderMetadataDto();
+        final AcapturePaymentProviderMetadata metadata = new AcapturePaymentProviderMetadata();
+        metadata.setCheckoutId(UUID.randomUUID().toString());
+        // Reset
+        resetAll();
+        // Expectations
+        expect(getRepository().findOne(paymentId)).andReturn(payment);
+        expect(acapturePaymentProviderMetadataHandler.convertPaymentProviderMetadataDto(dto)).andReturn(metadata);
+        expect(getRepository().save(payment)).andReturn(payment);
+        // Replay
+        replayAll();
+        // Run test scenario
+        final Payment result = paymentService.updatePaymentProviderMetadata(paymentId, dto);
+        assertEquals(metadata, result.getPaymentProcessingChannel().getPaymentProviderMetadata());
         // Verify
         verifyAll();
     }

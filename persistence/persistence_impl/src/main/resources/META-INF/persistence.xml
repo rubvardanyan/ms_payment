@@ -17,11 +17,13 @@
         <!-- Payment settings -->
         <class>com.sfl.pms.services.payment.settings.model.PaymentProviderSettings</class>
         <class>com.sfl.pms.services.payment.settings.model.adyen.AdyenPaymentSettings</class>
+        <class>com.sfl.pms.services.payment.settings.model.acapture.AcapturePaymentSettings</class>
 
         <!-- Payment -->
         <class>com.sfl.pms.services.payment.common.model.Payment</class>
         <class>com.sfl.pms.services.payment.common.model.PaymentResult</class>
         <class>com.sfl.pms.services.payment.common.model.adyen.AdyenPaymentResult</class>
+        <class>com.sfl.pms.services.payment.common.model.acapture.AcapturePaymentResult</class>
         <class>com.sfl.pms.services.payment.common.model.PaymentStateChangeHistoryRecord</class>
         <class>com.sfl.pms.services.payment.common.model.order.OrderPayment</class>
         <class>com.sfl.pms.services.payment.common.model.auth.CustomerPaymentMethodAuthorizationPayment</class>
@@ -30,11 +32,17 @@
         <class>com.sfl.pms.services.payment.common.model.channel.EncryptedPaymentMethodProcessingChannel</class>
         <class>com.sfl.pms.services.payment.common.model.channel.CustomerPaymentMethodProcessingChannel</class>
         <class>com.sfl.pms.services.payment.common.model.channel.DeferredPaymentMethodProcessingChannel</class>
+        <class>com.sfl.pms.services.payment.common.model.metadata.PaymentProviderMetadata</class>
+        <class>com.sfl.pms.services.payment.common.model.acapture.AcapturePaymentProviderMetadata</class>
 
         <!-- Payment method group -->
         <class>com.sfl.pms.services.payment.method.model.PaymentMethodDefinition</class>
         <class>com.sfl.pms.services.payment.method.model.individual.IndividualPaymentMethodDefinition</class>
         <class>com.sfl.pms.services.payment.method.model.group.GroupPaymentMethodDefinition</class>
+
+        <!-- Payment method settings -->
+        <class>com.sfl.pms.services.payment.method.model.PaymentMethodSettings</class>
+        <class>com.sfl.pms.services.payment.method.model.acapture.AcapturePaymentMethodSettings</class>
 
         <!-- Order payment request -->
         <class>com.sfl.pms.services.payment.common.model.order.request.OrderPaymentRequest</class>
@@ -75,6 +83,7 @@
         <!-- Payment provider redirect result -->
         <class>com.sfl.pms.services.payment.redirect.model.PaymentProviderRedirectResult</class>
         <class>com.sfl.pms.services.payment.redirect.model.adyen.AdyenRedirectResult</class>
+        <class>com.sfl.pms.services.payment.redirect.model.acapture.AcaptureRedirectResult</class>
 
     </persistence-unit>
 </persistence>
