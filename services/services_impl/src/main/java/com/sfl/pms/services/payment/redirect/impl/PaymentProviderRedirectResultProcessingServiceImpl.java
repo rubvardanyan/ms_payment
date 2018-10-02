@@ -6,6 +6,7 @@ import com.sfl.pms.services.payment.provider.exception.UnknownPaymentProviderTyp
 import com.sfl.pms.services.payment.provider.model.PaymentProviderType;
 import com.sfl.pms.services.payment.redirect.PaymentProviderRedirectResultProcessingService;
 import com.sfl.pms.services.payment.redirect.PaymentProviderRedirectResultService;
+import com.sfl.pms.services.payment.redirect.impl.acapture.AcaptureRedirectResultProcessor;
 import com.sfl.pms.services.payment.redirect.impl.adyen.AdyenRedirectResultProcessor;
 import com.sfl.pms.services.payment.redirect.model.PaymentProviderRedirectResult;
 import com.sfl.pms.services.payment.redirect.model.PaymentProviderRedirectResultState;
@@ -41,6 +42,9 @@ public class PaymentProviderRedirectResultProcessingServiceImpl implements Payme
 
     @Autowired
     private AdyenRedirectResultProcessor adyenRedirectResultProcessor;
+
+    @Autowired
+    private AcaptureRedirectResultProcessor acaptureRedirectResultProcessor;
 
     /* Constructors */
     public PaymentProviderRedirectResultProcessingServiceImpl() {
@@ -90,6 +94,8 @@ public class PaymentProviderRedirectResultProcessingServiceImpl implements Payme
         switch (paymentProviderType) {
             case ADYEN:
                 return adyenRedirectResultProcessor;
+            case ACAPTURE:
+                return acaptureRedirectResultProcessor;
             default: {
                 throw new UnknownPaymentProviderTypeException(paymentProviderType);
             }
