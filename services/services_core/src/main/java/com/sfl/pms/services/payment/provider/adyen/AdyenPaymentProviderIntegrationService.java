@@ -3,7 +3,7 @@ package com.sfl.pms.services.payment.provider.adyen;
 import com.sfl.pms.services.payment.provider.PaymentProviderIntegrationService;
 import com.sfl.pms.services.payment.provider.dto.AdyenRedirectUrlGenerationDto;
 import com.sfl.pms.services.payment.provider.model.adyen.AdyenRecurringContractType;
-import com.sfl.pms.services.payment.redirect.dto.redirect.AdyenRedirectResultDto;
+import com.sfl.pms.services.payment.redirect.dto.redirect.adyen.AdyenRedirectResultDto;
 
 import javax.annotation.Nonnull;
 

@@ -207,7 +207,11 @@ public class OrderPaymentRequestProcessorServiceImpl implements OrderPaymentRequ
             paymentProviderType = orderRequestRedirectPaymentMethod.getPaymentProviderType();
             if (paymentMethodType != null) {
                 paymentProcessingChannelDto = new ProvidedPaymentMethodProcessingChannelDto(PaymentProviderIntegrationType.REDIRECT, paymentMethodType);
-                paymentMethodDefinition = individualPaymentMethodDefinitionService.getPaymentMethodDefinitionForLookupParameters(paymentMethodType, order.getCurrency(), paymentProviderType);
+                if(individualPaymentMethodDefinitionService.checkIfPaymentMethodDefinitionExistsForLookupParameters(paymentMethodType, order.getCurrency(), paymentProviderType)) {
+                    paymentMethodDefinition = individualPaymentMethodDefinitionService.getPaymentMethodDefinitionForLookupParameters(paymentMethodType, order.getCurrency(), paymentProviderType);
+                } else {
+                    paymentMethodDefinition = null;
+                }
             } else {
                 paymentProcessingChannelDto = new DeferredPaymentMethodProcessingChannelDto(PaymentProviderIntegrationType.REDIRECT);
                 paymentMethodDefinition = null;

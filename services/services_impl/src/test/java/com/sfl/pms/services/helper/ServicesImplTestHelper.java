@@ -14,6 +14,7 @@ import com.sfl.pms.services.order.model.OrderStateChangeHistoryRecord;
 import com.sfl.pms.services.order.model.payment.provider.OrderProviderPaymentChannel;
 import com.sfl.pms.services.payment.common.dto.PaymentDto;
 import com.sfl.pms.services.payment.common.dto.PaymentStateChangeHistoryRecordDto;
+import com.sfl.pms.services.payment.common.dto.acapture.AcapturePaymentProviderMetadataDto;
 import com.sfl.pms.services.payment.common.dto.adyen.AdyenPaymentResultDto;
 import com.sfl.pms.services.payment.common.dto.auth.CustomerPaymentMethodAuthorizationPaymentDto;
 import com.sfl.pms.services.payment.common.dto.channel.CustomerPaymentMethodProcessingChannelDto;
@@ -29,6 +30,7 @@ import com.sfl.pms.services.payment.common.model.Payment;
 import com.sfl.pms.services.payment.common.model.PaymentResultStatus;
 import com.sfl.pms.services.payment.common.model.PaymentState;
 import com.sfl.pms.services.payment.common.model.PaymentStateChangeHistoryRecord;
+import com.sfl.pms.services.payment.common.model.acapture.AcapturePaymentProviderMetadata;
 import com.sfl.pms.services.payment.common.model.adyen.AdyenPaymentResult;
 import com.sfl.pms.services.payment.common.model.auth.CustomerPaymentMethodAuthorizationPayment;
 import com.sfl.pms.services.payment.common.model.channel.CustomerPaymentMethodProcessingChannel;
@@ -61,7 +63,9 @@ import com.sfl.pms.services.payment.method.dto.group.GroupPaymentMethodDefinitio
 import com.sfl.pms.services.payment.method.dto.individual.IndividualPaymentMethodDefinitionDto;
 import com.sfl.pms.services.payment.method.model.PaymentMethodDefinition;
 import com.sfl.pms.services.payment.method.model.PaymentMethodGroupType;
+import com.sfl.pms.services.payment.method.model.PaymentMethodSettings;
 import com.sfl.pms.services.payment.method.model.PaymentMethodType;
+import com.sfl.pms.services.payment.method.model.acapture.AcapturePaymentMethodSettings;
 import com.sfl.pms.services.payment.method.model.adyen.AdyenPaymentMethodType;
 import com.sfl.pms.services.payment.method.model.group.GroupPaymentMethodDefinition;
 import com.sfl.pms.services.payment.method.model.individual.IndividualPaymentMethodDefinition;
@@ -75,10 +79,13 @@ import com.sfl.pms.services.payment.notification.model.adyen.AdyenPaymentProvide
 import com.sfl.pms.services.payment.provider.dto.AdyenRedirectUrlGenerationDto;
 import com.sfl.pms.services.payment.provider.model.PaymentProviderIntegrationType;
 import com.sfl.pms.services.payment.provider.model.PaymentProviderType;
-import com.sfl.pms.services.payment.redirect.dto.redirect.AdyenRedirectResultDto;
+import com.sfl.pms.services.payment.redirect.dto.redirect.acapture.AcaptureRedirectResultDto;
+import com.sfl.pms.services.payment.redirect.dto.redirect.adyen.AdyenRedirectResultDto;
 import com.sfl.pms.services.payment.redirect.model.PaymentProviderRedirectResultState;
+import com.sfl.pms.services.payment.redirect.model.acapture.AcaptureRedirectResult;
 import com.sfl.pms.services.payment.redirect.model.adyen.AdyenRedirectResult;
 import com.sfl.pms.services.payment.settings.dto.adyen.AdyenPaymentSettingsDto;
+import com.sfl.pms.services.payment.settings.model.acapture.AcapturePaymentSettings;
 import com.sfl.pms.services.payment.settings.model.adyen.AdyenPaymentSettings;
 import com.sfl.pms.services.system.environment.model.EnvironmentType;
 import com.sfl.pms.services.util.mutable.MutableHolder;
@@ -962,6 +969,68 @@ public class ServicesImplTestHelper {
 
     public OrderProviderPaymentChannel createOrderProviderPaymentChannel() {
         return createOrderProviderPaymentChannel(createOrderProviderPaymentChannelDto());
+    }
+
+    /* Acapture payment settings */
+    public AcapturePaymentSettings createAcapturePaymentSettings() {
+        final AcapturePaymentSettings paymentSettings = new AcapturePaymentSettings();
+        paymentSettings.setNotificationsToken(UUID.randomUUID().toString());
+        paymentSettings.setPassword(UUID.randomUUID().toString());
+        paymentSettings.setUserName(UUID.randomUUID().toString());
+        paymentSettings.setEnvironmentType(EnvironmentType.STAGING);
+        paymentSettings.setHostPageUrl("http://mysite.com/payment/");
+        return paymentSettings;
+    }
+
+    public PaymentMethodSettings createPaymentMethodSettings() {
+        return createAcapturePaymentMethodSettings();
+    }
+
+    public AcapturePaymentMethodSettings createAcapturePaymentMethodSettings() {
+        final AcapturePaymentMethodSettings paymentMethodSettings = new AcapturePaymentMethodSettings();
+        paymentMethodSettings.setProviderType(PaymentProviderType.ACAPTURE);
+        paymentMethodSettings.setPaymentMethodType(PaymentMethodType.VISA);
+        paymentMethodSettings.setPaymentSettings(createAcapturePaymentSettings());
+        paymentMethodSettings.setAuthorizationId(UUID.randomUUID().toString());
+        return paymentMethodSettings;
+    }
+
+    public AcapturePaymentProviderMetadataDto createAcapturePaymentProviderMetadataDto() {
+        final AcapturePaymentProviderMetadataDto dto = new AcapturePaymentProviderMetadataDto();
+        dto.setCheckoutId(UUID.randomUUID().toString());
+        return dto;
+    }
+
+    public void assertAcapturePaymentProviderMetadataDto(final AcapturePaymentProviderMetadata metadata, final AcapturePaymentProviderMetadataDto dto) {
+        assertNotNull(metadata);
+        assertEquals(PaymentProviderType.ACAPTURE, metadata.getProviderType());
+        assertEquals(metadata.getCheckoutId(), dto.getCheckoutId());
+    }
+
+    /* Acapture redirect result */
+    public AcaptureRedirectResult createAcaptureRedirectResult() {
+        final AcaptureRedirectResult acaptureRedirectResult = new AcaptureRedirectResult(true);
+        acaptureRedirectResult.setCheckoutId(UUID.randomUUID().toString());
+        acaptureRedirectResult.setResourcePath(UUID.randomUUID().toString());
+        return acaptureRedirectResult;
+    }
+
+    public AcaptureRedirectResult createAcaptureRedirectResult(final AcaptureRedirectResultDto dto) {
+        final AcaptureRedirectResult acaptureRedirectResult = new AcaptureRedirectResult(true);
+        acaptureRedirectResult.setCheckoutId(dto.getCheckoutId());
+        acaptureRedirectResult.setResourcePath(dto.getResourcePath());
+        return acaptureRedirectResult;
+    }
+
+    public AcaptureRedirectResultDto createAcaptureRedirectResultDto() {
+        return new AcaptureRedirectResultDto(UUID.randomUUID().toString(), UUID.randomUUID().toString());
+    }
+
+    public void assertAcaptureRedirectResult(final AcaptureRedirectResult redirectResult, final AcaptureRedirectResultDto dto) {
+        assertNotNull(redirectResult);
+        assertEquals(PaymentProviderType.ACAPTURE, redirectResult.getType());
+        assertEquals(dto.getCheckoutId(), redirectResult.getCheckoutId());
+        assertEquals(dto.getResourcePath(), redirectResult.getResourcePath());
     }
 
 

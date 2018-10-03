@@ -3,7 +3,7 @@ package com.sfl.pms.services.payment.redirect.impl.adyen;
 import com.sfl.pms.persistence.repositories.payment.redirect.AbstractPaymentProviderRedirectResultRepository;
 import com.sfl.pms.persistence.repositories.payment.redirect.adyen.AdyenRedirectResultRepository;
 import com.sfl.pms.services.payment.redirect.adyen.AdyenRedirectResultService;
-import com.sfl.pms.services.payment.redirect.dto.redirect.AdyenRedirectResultDto;
+import com.sfl.pms.services.payment.redirect.dto.redirect.adyen.AdyenRedirectResultDto;
 import com.sfl.pms.services.payment.redirect.impl.AbstractPaymentProviderRedirectResultServiceImpl;
 import com.sfl.pms.services.payment.redirect.model.adyen.AdyenRedirectResult;
 import org.slf4j.Logger;

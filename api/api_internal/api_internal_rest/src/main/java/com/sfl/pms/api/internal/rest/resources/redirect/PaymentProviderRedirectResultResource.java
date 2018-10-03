@@ -2,8 +2,10 @@ package com.sfl.pms.api.internal.rest.resources.redirect;
 
 import com.sfl.pms.api.internal.facade.redirect.PaymentProviderRedirectResultFacade;
 import com.sfl.pms.core.api.internal.model.common.result.ResultResponseModel;
+import com.sfl.pms.core.api.internal.model.redirect.request.CreateAcaptureRedirectResultRequest;
 import com.sfl.pms.core.api.internal.model.redirect.request.CreateAdyenRedirectResultRequest;
 import com.sfl.pms.core.api.internal.model.redirect.request.GetPaymentProviderRedirectResultStatusRequest;
+import com.sfl.pms.core.api.internal.model.redirect.response.CreateAcaptureRedirectResultResponse;
 import com.sfl.pms.core.api.internal.model.redirect.response.CreateAdyenRedirectResultResponse;
 import com.sfl.pms.core.api.internal.model.redirect.response.GetPaymentProviderRedirectResultStatusResponse;
 import org.slf4j.Logger;
@@ -42,6 +44,15 @@ public class PaymentProviderRedirectResultResource {
     public Response processAdyenRedirectResult(final CreateAdyenRedirectResultRequest request) {
         LOGGER.debug("Got payment provider redirect result, request - {}", request);
         final ResultResponseModel<CreateAdyenRedirectResultResponse> result = paymentProviderRedirectResultFacade.createAdyenRedirectResult(request);
+        LOGGER.debug("Successfully retrieved result - {}, for request - {}", result, request);
+        return Response.ok(result).build();
+    }
+
+    @POST
+    @Path("acapture/create")
+    public Response processAcaptureRedirectResult(final CreateAcaptureRedirectResultRequest request) {
+        LOGGER.debug("Got payment provider redirect result, request - {}", request);
+        final ResultResponseModel<CreateAcaptureRedirectResultResponse> result = paymentProviderRedirectResultFacade.createAcaptureRedirectResult(request);
         LOGGER.debug("Successfully retrieved result - {}, for request - {}", result, request);
         return Response.ok(result).build();
     }

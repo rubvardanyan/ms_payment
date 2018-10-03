@@ -18,4 +18,11 @@ public interface PaymentResultStatusMapper {
      * @return paymentResultStatus
      */
     PaymentResultStatus getPaymentResultStatusForAdyenPaymentStatus(final AdyenPaymentStatus adyenPaymentStatus);
+
+    /**
+     * Maps Acapture payment status check response result code to payment result status
+     * @param acapturePaymentStatus
+     * @return
+     */
+    PaymentResultStatus getPaymentResultStatusForAcapturePaymentStatus(final String acapturePaymentStatus);
 }

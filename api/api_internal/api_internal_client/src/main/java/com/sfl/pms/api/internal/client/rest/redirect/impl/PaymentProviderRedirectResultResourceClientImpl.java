@@ -3,8 +3,10 @@ package com.sfl.pms.api.internal.client.rest.redirect.impl;
 import com.sfl.pms.api.internal.client.rest.common.AbstractResourceClient;
 import com.sfl.pms.api.internal.client.rest.redirect.PaymentProviderRedirectResultResourceClient;
 import com.sfl.pms.core.api.internal.model.common.result.ResultResponseModel;
+import com.sfl.pms.core.api.internal.model.redirect.request.CreateAcaptureRedirectResultRequest;
 import com.sfl.pms.core.api.internal.model.redirect.request.CreateAdyenRedirectResultRequest;
 import com.sfl.pms.core.api.internal.model.redirect.request.GetPaymentProviderRedirectResultStatusRequest;
+import com.sfl.pms.core.api.internal.model.redirect.response.CreateAcaptureRedirectResultResponse;
 import com.sfl.pms.core.api.internal.model.redirect.response.CreateAdyenRedirectResultResponse;
 import com.sfl.pms.core.api.internal.model.redirect.response.GetPaymentProviderRedirectResultStatusResponse;
 import org.slf4j.Logger;
@@ -31,6 +33,8 @@ public class PaymentProviderRedirectResultResourceClientImpl extends AbstractRes
 
     private static final String PROCESS_ADYEN_REDIRECT_RESULT_PATH = "adyen/create";
 
+    private static final String PROCESS_ACAPTURE_REDIRECT_RESULT_PATH = "acapture/create";
+
     private static final String GET_PAYMENT_PROVIDER_REDIRECT_RESULT_STATUS_PATH = "status";
     //endregion
 
@@ -52,6 +56,18 @@ public class PaymentProviderRedirectResultResourceClientImpl extends AbstractRes
                 .path(PROCESS_ADYEN_REDIRECT_RESULT_PATH)
                 .request(MediaType.APPLICATION_JSON_TYPE)
                 .post(Entity.entity(request, MediaType.APPLICATION_JSON_TYPE), new GenericType<ResultResponseModel<CreateAdyenRedirectResultResponse>>() {
+                });
+    }
+
+    @Nonnull
+    @Override
+    public ResultResponseModel<CreateAcaptureRedirectResultResponse> createAcaptureRedirectResult(@Nonnull final CreateAcaptureRedirectResultRequest request) {
+        return getClient()
+                .target(getApiPath())
+                .path(RESOURCE_BASE_PATH)
+                .path(PROCESS_ACAPTURE_REDIRECT_RESULT_PATH)
+                .request(MediaType.APPLICATION_JSON_TYPE)
+                .post(Entity.entity(request, MediaType.APPLICATION_JSON_TYPE), new GenericType<ResultResponseModel<CreateAcaptureRedirectResultResponse>>() {
                 });
     }
 
