@@ -23,8 +23,7 @@ public abstract class AbstractDomainEntityModel implements Serializable {
 
     /* Properties */
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "qup_payment_generator")
-    @SequenceGenerator(name = "qup_payment_generator")
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
 
