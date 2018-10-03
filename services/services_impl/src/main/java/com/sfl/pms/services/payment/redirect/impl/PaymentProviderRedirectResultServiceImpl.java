@@ -2,10 +2,13 @@ package com.sfl.pms.services.payment.redirect.impl;
 
 import com.sfl.pms.persistence.repositories.payment.redirect.AbstractPaymentProviderRedirectResultRepository;
 import com.sfl.pms.persistence.repositories.payment.redirect.PaymentProviderRedirectResultRepository;
+import com.sfl.pms.services.common.exception.ServicesRuntimeException;
+import com.sfl.pms.services.payment.provider.model.PaymentProviderType;
 import com.sfl.pms.services.payment.redirect.PaymentProviderRedirectResultService;
 import com.sfl.pms.services.payment.redirect.exception.PaymentProviderRedirectResultStateNotAllowedException;
 import com.sfl.pms.services.payment.redirect.model.PaymentProviderRedirectResult;
 import com.sfl.pms.services.payment.redirect.model.PaymentProviderRedirectResultState;
+import com.sfl.pms.services.payment.redirect.model.adyen.AdyenRedirectResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +48,17 @@ public class PaymentProviderRedirectResultServiceImpl extends AbstractPaymentPro
         Assert.notNull(state, "Payment provider redirect result state should not be null");
         Assert.notNull(allowedInitialStates, "Payment provider redirect result allowed initial states should not be null");
         LOGGER.debug("Updating payment provider redirect result state with id - {}, state - {}, allowed initial states - {}", paymentProviderRedirectResultId, state, allowedInitialStates);
-        PaymentProviderRedirectResult notification = paymentProviderRedirectResultRepository.findByIdWithPessimisticWriteLock(paymentProviderRedirectResultId);
+        final PaymentProviderRedirectResult instance = paymentProviderRedirectResultRepository.findOne(paymentProviderRedirectResultId);
+        PaymentProviderRedirectResult notification;
+        //TODO: find better solution for postgres database nullable left outer join with write lock
+        if(instance.getType().equals(PaymentProviderType.ADYEN)) {
+            notification = paymentProviderRedirectResultRepository.findByIdWithPessimisticWriteLock(paymentProviderRedirectResultId, AdyenRedirectResult.class);
+        } else if(instance.getType().equals(PaymentProviderType.ACAPTURE)) {
+            notification = paymentProviderRedirectResultRepository.findByIdWithPessimisticWriteLock(paymentProviderRedirectResultId, AdyenRedirectResult.class);
+        } else {
+            LOGGER.error("Unknown payment provider");
+            throw new ServicesRuntimeException("Unknown payment provider");
+        }
         assertPaymentProviderRedirectResultNotNullForId(notification, paymentProviderRedirectResultId);
         final PaymentProviderRedirectResultState initialState = notification.getState();
         if (allowedInitialStates.size() != 0) {

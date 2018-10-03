@@ -30,10 +30,10 @@ public class PaymentProviderRedirectResultRepositoryImpl implements PaymentProvi
     }
 
     @Override
-    public PaymentProviderRedirectResult findByIdWithPessimisticWriteLock(@Nonnull final Long id) {
+    public <T extends PaymentProviderRedirectResult> T findByIdWithPessimisticWriteLock(@Nonnull final Long id, @Nonnull Class<T> clazz) {
         Assert.notNull(id, "Payment provider redirect result id should not be null");
         LOGGER.debug("Loading payment provider redirect result with id - {} using pessimistic write lock.", id);
-        final PaymentProviderRedirectResult paymentProviderRedirectResult = entityManager.find(PaymentProviderRedirectResult.class, id, LockModeType.PESSIMISTIC_WRITE);
+        final T paymentProviderRedirectResult = entityManager.find(clazz, id, LockModeType.PESSIMISTIC_WRITE);
         LOGGER.debug("Successfully retrieved payment provider redirect result with id - {} using pessimistic write lock. Payment provider redirect result - {}", id, paymentProviderRedirectResult);
         return paymentProviderRedirectResult;
     }

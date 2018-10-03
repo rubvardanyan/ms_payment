@@ -18,5 +18,5 @@ public interface PaymentProviderRedirectResultRepositoryCustom {
      * @param id
      * @return paymentProviderRedirectResult
      */
-    PaymentProviderRedirectResult findByIdWithPessimisticWriteLock(@Nonnull final Long id);
+    <T extends PaymentProviderRedirectResult> T findByIdWithPessimisticWriteLock(@Nonnull final Long id, @Nonnull Class<T> clazz);
 }
