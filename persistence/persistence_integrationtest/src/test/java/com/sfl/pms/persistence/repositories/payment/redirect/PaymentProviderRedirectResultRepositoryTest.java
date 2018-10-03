@@ -2,6 +2,7 @@ package com.sfl.pms.persistence.repositories.payment.redirect;
 
 import com.sfl.pms.persistence.repositories.AbstractRepositoryTest;
 import com.sfl.pms.services.payment.redirect.model.PaymentProviderRedirectResult;
+import com.sfl.pms.services.payment.redirect.model.acapture.AcaptureRedirectResult;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -29,7 +30,7 @@ public class PaymentProviderRedirectResultRepositoryTest extends AbstractReposit
         // Prepare data
         final Long id = 1L;
         // Load and assert
-        final PaymentProviderRedirectResult paymentProviderRedirectResult = paymentProviderRedirectResultRepository.findByIdWithPessimisticWriteLock(id);
+        final PaymentProviderRedirectResult paymentProviderRedirectResult = paymentProviderRedirectResultRepository.findByIdWithPessimisticWriteLock(id, AcaptureRedirectResult.class);
         assertNull(paymentProviderRedirectResult);
     }
 }
