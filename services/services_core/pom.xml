@@ -33,10 +33,11 @@
             <artifactId>c3p0</artifactId>
             <version>${c3po.version}</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>${mysql.connector.version}</version>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${posgtres.driver.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.usc</groupId>
