@@ -40,37 +40,37 @@ public class PaymentResultStatusMapperImpl implements PaymentResultStatusMapper 
 
         /* Full list of acapture result codes - https://docs.acaptureservices.com/reference/resultCodes */
         ACAPTURE_SUCCESSFUL_STATUS_CODE_PATTERNS = Collections.unmodifiableList(Arrays.asList(
-            "^(000\\.000\\.|000\\.100\\.1|000\\.[36])",     //Successfully processed
-            "^(000\\.400\\.0[^3]|000\\.400\\.100)"          //Successfully processed but should be manually reviewed
+            "^000\\.000\\..*|000\\.100\\.1.*|000\\.[36].*",     //Successfully processed
+            "^000\\.400\\.0[^3].*|000\\.400\\.100.*"          //Successfully processed but should be manually reviewed
         ));
 
         ACAPTURE_PENDING_STATUS_CODE_PATTERNS = Collections.unmodifiableList(Arrays.asList(
-            "^(000\\.200)",                                 //Open session which should be closed in 30 minutes or timeout
-            "^(800\\.400\\.5|100\\.400\\.500)"              //Open session which can be closed after few days
+            "^000\\.200.*",                                 //Open session which should be closed in 30 minutes or timeout
+            "^800\\.400\\.5.*|100\\.400\\.500.*"              //Open session which can be closed after few days
         ));
 
         ACAPTURE_ERROR_STATUS_CODE_PATTERS = Collections.unmodifiableList(Arrays.asList(
-            "^(900\\.[1234]00|000\\.400\\.030)",            // Communication errors
-            "^(800\\.5|999\\.|600\\.1|800\\.800\\.8)",      // System errors
-            "^(600\\.[23]|500\\.[12]|800\\.121)",           //Configuration errors
-            "^(100\\.380\\.[23]|100\\.380\\.101)"           //Risk management errors
+            "^900\\.[1234]00.*|000\\.400\\.030.*",            // Communication errors
+            "^800\\.5|999\\..*|600\\.1.*|800\\.800\\.8.*",      // System errors
+            "^600\\.[23].*|500\\.[12].*|800\\.121.*",           //Configuration errors
+            "^100\\.380\\.[23]|100\\.380\\.101"           //Risk management errors
         ));
 
         ACAPTURE_REFUSED_STATUS_CODE_PATTERS = Collections.unmodifiableList(Arrays.asList(
-            "^(100\\.400|100\\.38|100\\.370\\.100|100\\.370\\.11)",         //External risk system validations
-            "^(800\\.400\\.1)",                                             //Address validations
-            "^(800\\.400\\.2|100\\.380\\.4|100\\.390)",                     //3D secure validations
-            "^(100\\.100\\.701|800\\.[32])",                                //Blacklist validations
-            "^(800\\.1[123456]0)",                                          //Risk validations
-            "^(100\\.[13]50)",                                              //Registration validations
-            "^(100\\.250|100\\.360)",                                       //Job validations
-            "^(700\\.[1345][05]0)",                                         //Reference validations
-            "^(200\\.[123]|100\\.[53][07]|800\\.900|100\\.[69]00\\.500)",   //Format validations
-            "^(100\\.800)",                                                 //Address validations
-            "^(100\\.[97]00)",                                              //Contact validations
-            "^(100\\.100|100.2[01])",                                       //Account validations
-            "^(100\\.55)",                                                  //Amount validations
-            "^(000\\.100\\.2)"                                              //Chargeback results
+            "^100\\.400.*|100\\.38.*|100\\.370\\.100.*|100\\.370\\.11.*",         //External risk system validations
+            "^800\\.400\\.1.*",                                             //Address validations
+            "^800\\.400\\.2.*|100\\.380\\.4.*|100\\.390.*",                     //3D secure validations
+            "^100\\.100\\.701.*|800\\.[32].*",                                //Blacklist validations
+            "^800\\.1[123456]0.*",                                          //Risk validations
+            "^100\\.[13]50.*",                                              //Registration validations
+            "^100\\.250.*|100\\.360.*",                                       //Job validations
+            "^700\\.[1345][05]0.*",                                         //Reference validations
+            "^200\\.[123].*|100\\.[53][07].*|800\\.900.*|100\\.[69]00\\.500.*",   //Format validations
+            "^100\\.800.*",                                                 //Address validations
+            "^100\\.[97]00.*",                                              //Contact validations
+            "^100\\.100.*|100.2[01].*",                                       //Account validations
+            "^100\\.55.*",                                                  //Amount validations
+            "^000\\.100\\.2.*"                                              //Chargeback results
         ));
     }
 

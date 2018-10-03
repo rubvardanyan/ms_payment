@@ -82,7 +82,21 @@ public class AcaptureApiCommunicatorImpl implements AcaptureApiCommunicator {
         LOGGER.debug("Submitting check payment status request with model - {}", request);
         final MultiValueMap<String, String> valueMap = getValueMapWithAuthorizationValues(request.getAuthenticationModel());
         final HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(valueMap, getDefaultHeaders());
-        final ResponseEntity<CheckPaymentStatusResponse> responseEntity = restClient.postForEntity(url + request.getResourcePath(), entity, CheckPaymentStatusResponse.class);
+        final String requestUrl = url +
+                request.getResourcePath() +
+                "?" +
+                AcaptureAttributeMappings.AUTHENTICATION_USER_ID +
+                "=" +
+                userId +
+                "&" +
+                AcaptureAttributeMappings.AUTHENTICATION_PASSWORD +
+                "=" +
+                password +
+                "&" +
+                AcaptureAttributeMappings.AUTHENTICATION_ENTITY_ID +
+                "=" +
+                request.getAuthenticationModel().getEntityId();
+        final ResponseEntity<CheckPaymentStatusResponse> responseEntity = restClient.getForEntity(requestUrl, CheckPaymentStatusResponse.class);
         if(responseEntity.getStatusCode() != HttpStatus.OK) {
             LOGGER.error("Invalid response status returned - {}", responseEntity);
             throw new IllegalStateException("Invalid response status returned - " + responseEntity);
