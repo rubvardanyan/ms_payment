@@ -15,5 +15,6 @@ public enum PaymentMethodClientType {
     DINERS_CLUB,
     DISCOVER,
     IDEAL,
-    SEPA_DIRECT_DEBIT;
+    SEPA_DIRECT_DEBIT,
+    PAYPAYL;
 }
