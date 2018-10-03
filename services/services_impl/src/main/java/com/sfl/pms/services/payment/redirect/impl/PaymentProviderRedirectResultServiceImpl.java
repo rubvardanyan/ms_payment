@@ -8,6 +8,7 @@ import com.sfl.pms.services.payment.redirect.PaymentProviderRedirectResultServic
 import com.sfl.pms.services.payment.redirect.exception.PaymentProviderRedirectResultStateNotAllowedException;
 import com.sfl.pms.services.payment.redirect.model.PaymentProviderRedirectResult;
 import com.sfl.pms.services.payment.redirect.model.PaymentProviderRedirectResultState;
+import com.sfl.pms.services.payment.redirect.model.acapture.AcaptureRedirectResult;
 import com.sfl.pms.services.payment.redirect.model.adyen.AdyenRedirectResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +55,7 @@ public class PaymentProviderRedirectResultServiceImpl extends AbstractPaymentPro
         if(instance.getType().equals(PaymentProviderType.ADYEN)) {
             notification = paymentProviderRedirectResultRepository.findByIdWithPessimisticWriteLock(paymentProviderRedirectResultId, AdyenRedirectResult.class);
         } else if(instance.getType().equals(PaymentProviderType.ACAPTURE)) {
-            notification = paymentProviderRedirectResultRepository.findByIdWithPessimisticWriteLock(paymentProviderRedirectResultId, AdyenRedirectResult.class);
+            notification = paymentProviderRedirectResultRepository.findByIdWithPessimisticWriteLock(paymentProviderRedirectResultId, AcaptureRedirectResult.class);
         } else {
             LOGGER.error("Unknown payment provider");
             throw new ServicesRuntimeException("Unknown payment provider");
