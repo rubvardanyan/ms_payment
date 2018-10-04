@@ -10,7 +10,7 @@ public enum  AcapturePaymentMethodType {
     MASTER_CARD("MASTER"),
     VISA("VISA"),
     IDEAL("IDEAL"),
-    PAYPAL("PAYPAL");
+    GIROPAY("GIROPAY");
 
     /* Properties */
     private final String code;

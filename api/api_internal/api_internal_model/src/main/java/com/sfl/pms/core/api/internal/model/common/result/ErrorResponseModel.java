@@ -1,5 +1,6 @@
 package com.sfl.pms.core.api.internal.model.common.result;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
@@ -18,7 +19,8 @@ public class ErrorResponseModel implements Serializable {
     @JsonProperty("errorType")
     private final ErrorType errorType;
 
-    public ErrorResponseModel(final ErrorType errorType) {
+    @JsonCreator
+    public ErrorResponseModel(@JsonProperty("errorType") final ErrorType errorType) {
         this.errorType = errorType;
     }
 

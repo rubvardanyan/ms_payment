@@ -16,5 +16,5 @@ public enum PaymentMethodClientType {
     DISCOVER,
     IDEAL,
     SEPA_DIRECT_DEBIT,
-    PAYPAYL;
+    GIROPAY;
 }

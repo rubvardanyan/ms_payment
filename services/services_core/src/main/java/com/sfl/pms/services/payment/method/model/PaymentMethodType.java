@@ -23,7 +23,7 @@ public enum PaymentMethodType {
     DINERS_CLUB(PaymentMethodGroupType.CARD, AdyenPaymentMethodType.DINERS_CLUB, null),
     DISCOVER(PaymentMethodGroupType.CARD, AdyenPaymentMethodType.DISCOVER, null),
     IDEAL(PaymentMethodGroupType.BANK_TRANSFER, AdyenPaymentMethodType.IDEAL, AcapturePaymentMethodType.IDEAL),
-    PAYPAL(PaymentMethodGroupType.BANK_TRANSFER, null, AcapturePaymentMethodType.PAYPAL),
+    GIROPAY(PaymentMethodGroupType.BANK_TRANSFER, null, AcapturePaymentMethodType.GIROPAY),
     SEPA_DIRECT_DEBIT(PaymentMethodGroupType.BANK_TRANSFER, AdyenPaymentMethodType.SEPA_DIRECT_DEBIT, null);
 
     /* Static mapping of Adyen payment method type with payment method */
