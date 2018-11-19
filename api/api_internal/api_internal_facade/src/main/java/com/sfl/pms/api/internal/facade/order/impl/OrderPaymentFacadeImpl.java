@@ -13,6 +13,7 @@ import com.sfl.pms.core.api.internal.model.order.request.RePayOrderRequest;
 import com.sfl.pms.core.api.internal.model.order.response.CreateOrderPaymentResponse;
 import com.sfl.pms.core.api.internal.model.order.response.CreateOrderRefundResponse;
 import com.sfl.pms.core.api.internal.model.order.response.GetOrderPaymentRequestStatusResponse;
+import com.sfl.pms.core.api.internal.model.provider.PaymentProviderClientType;
 import com.sfl.pms.services.common.exception.ServicesRuntimeException;
 import com.sfl.pms.services.currency.model.Currency;
 import com.sfl.pms.services.customer.CustomerService;
@@ -166,7 +167,7 @@ public class OrderPaymentFacadeImpl implements OrderPaymentFacade {
             return new ResultResponseModel<>(errors);
         }
         final OrderPaymentRequest orderPaymentRequest = orderPaymentRequestService.getOrderPaymentRequestByUuId(request.getOrderPaymentRequestUuid());
-        final OrderRefundRequest orderRefundRequest = createOrderRefundRequestAndStartProcessing(orderPaymentRequest.getId());
+        final OrderRefundRequest orderRefundRequest = createOrderRefundRequestAndStartProcessing(orderPaymentRequest.getId(), request.getPaymentProviderType());
         // Create response
         final CreateOrderRefundResponse response = new CreateOrderRefundResponse(orderRefundRequest.getUuId());
         LOGGER.debug("Successfully created response - {} for refund order request - {}", response, request);
@@ -185,9 +186,9 @@ public class OrderPaymentFacadeImpl implements OrderPaymentFacade {
         return orderPaymentRequest;
     }
 
-    private OrderRefundRequest createOrderRefundRequestAndStartProcessing(final Long orderPaymentRequestId) {
+    private OrderRefundRequest createOrderRefundRequestAndStartProcessing(final Long orderPaymentRequestId, final PaymentProviderClientType paymentProviderClientType) {
         // Create order refund request
-        final OrderRefundRequest orderRefundRequest = orderRefundRequestService.create(orderPaymentRequestId);
+        final OrderRefundRequest orderRefundRequest = orderRefundRequestService.create(orderPaymentRequestId, PaymentProviderType.valueOf(paymentProviderClientType.name()));
         // Publish event
         applicationEventDistributionService.publishAsynchronousEvent(new StartOrderRefundRequestProcessingCommandEvent(orderRefundRequest.getId()));
         return orderRefundRequest;

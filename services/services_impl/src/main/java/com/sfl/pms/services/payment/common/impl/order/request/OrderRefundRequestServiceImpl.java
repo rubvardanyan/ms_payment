@@ -8,6 +8,7 @@ import com.sfl.pms.services.payment.common.model.order.request.OrderRefundReques
 import com.sfl.pms.services.payment.common.model.order.request.OrderRefundRequestState;
 import com.sfl.pms.services.payment.common.order.request.OrderPaymentRequestService;
 import com.sfl.pms.services.payment.common.order.request.OrderRefundRequestService;
+import com.sfl.pms.services.payment.provider.model.PaymentProviderType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,15 +67,16 @@ public class OrderRefundRequestServiceImpl implements OrderRefundRequestService 
     @Transactional
     @Nonnull
     @Override
-    public OrderRefundRequest create(@Nonnull final Long orderPaymentRequestId) {
+    public OrderRefundRequest create(@Nonnull final Long orderPaymentRequestId, @Nonnull final PaymentProviderType paymentProviderType) {
         assertOrderPaymentRequestId(orderPaymentRequestId);
+        Assert.notNull(paymentProviderType, "Payment provider type should not be null for OrderRefundRequest");
         LOGGER.debug("Creating order refund request for order payment request with id - {}", orderPaymentRequestId);
-        String s;
         final OrderPaymentRequest orderPaymentRequest = orderPaymentRequestService.getOrderPaymentRequestById(orderPaymentRequestId);
         // Create new order refund request
         OrderRefundRequest orderRefundRequest = new OrderRefundRequest(true);
         // Update domain properties
         orderRefundRequest.setOrderPaymentRequest(orderPaymentRequest);
+        orderRefundRequest.setPaymentProviderType(paymentProviderType);
         // Persist payment request
         orderRefundRequest = orderRefundRequestRepository.save(orderRefundRequest);
         LOGGER.debug("Successfully created order refund request for order payment request with id - {}, refund request - {}", orderPaymentRequestId, orderRefundRequest);

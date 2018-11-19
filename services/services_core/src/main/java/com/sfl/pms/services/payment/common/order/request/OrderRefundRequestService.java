@@ -2,6 +2,7 @@ package com.sfl.pms.services.payment.common.order.request;
 
 import com.sfl.pms.services.payment.common.model.order.request.OrderRefundRequest;
 import com.sfl.pms.services.payment.common.model.order.request.OrderRefundRequestState;
+import com.sfl.pms.services.payment.provider.model.PaymentProviderType;
 
 import javax.annotation.Nonnull;
 
@@ -39,7 +40,7 @@ public interface OrderRefundRequestService {
      * @return OrderRefundRequest
      */
     @Nonnull
-    OrderRefundRequest create(@Nonnull final Long orderPaymentRequestId);
+    OrderRefundRequest create(@Nonnull final Long orderPaymentRequestId, @Nonnull PaymentProviderType paymentProviderType);
 
 
     /**

@@ -1,6 +1,7 @@
 package com.sfl.pms.services.payment.common.model.order.request;
 
 import com.sfl.pms.services.common.model.AbstractDomainUuIdAwareEntityModel;
+import com.sfl.pms.services.payment.provider.model.PaymentProviderType;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -26,6 +27,10 @@ public class OrderRefundRequest extends AbstractDomainUuIdAwareEntityModel {
     @Enumerated(EnumType.STRING)
     @Column(name = "state", nullable = false)
     private OrderRefundRequestState state;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_provider_type", nullable = false)
+    private PaymentProviderType paymentProviderType;
 
     /* Constructors */
     public OrderRefundRequest() {
@@ -54,6 +59,14 @@ public class OrderRefundRequest extends AbstractDomainUuIdAwareEntityModel {
         this.state = state;
     }
 
+    public PaymentProviderType getPaymentProviderType() {
+        return paymentProviderType;
+    }
+
+    public void setPaymentProviderType(final PaymentProviderType paymentProviderType) {
+        this.paymentProviderType = paymentProviderType;
+    }
+
     /* Private utility methods */
     private void initializeDefaults() {
         this.state = OrderRefundRequestState.CREATED;
@@ -73,6 +86,7 @@ public class OrderRefundRequest extends AbstractDomainUuIdAwareEntityModel {
         builder.appendSuper(super.equals(that));
         builder.append(getIdOrNull(this.getOrderPaymentRequest()), getIdOrNull(that.getOrderPaymentRequest()));
         builder.append(this.getState(), that.getState());
+        builder.append(this.getPaymentProviderType(), that.getPaymentProviderType());
         return builder.isEquals();
     }
 
@@ -82,6 +96,7 @@ public class OrderRefundRequest extends AbstractDomainUuIdAwareEntityModel {
         builder.appendSuper(super.hashCode());
         builder.append(getIdOrNull(this.getOrderPaymentRequest()));
         builder.append(this.getState());
+        builder.append(this.getPaymentProviderType());
         return builder.build();
     }
 
@@ -92,6 +107,7 @@ public class OrderRefundRequest extends AbstractDomainUuIdAwareEntityModel {
         builder.appendSuper(super.toString());
         builder.append("orderPaymentRequest", getIdOrNull(this.getOrderPaymentRequest()));
         builder.append("state", this.getState());
+        builder.append("paymentProviderType", this.getPaymentProviderType());
         return builder.build();
     }
 }

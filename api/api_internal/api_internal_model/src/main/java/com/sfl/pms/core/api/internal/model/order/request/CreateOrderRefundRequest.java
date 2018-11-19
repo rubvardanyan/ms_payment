@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sfl.pms.core.api.internal.model.common.AbstractRequestModel;
 import com.sfl.pms.core.api.internal.model.common.result.ErrorResponseModel;
 import com.sfl.pms.core.api.internal.model.common.result.ErrorType;
+import com.sfl.pms.core.api.internal.model.provider.PaymentProviderClientType;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -27,12 +28,16 @@ public class CreateOrderRefundRequest extends AbstractRequestModel {
     @JsonProperty("orderPaymentRequestUuid")
     private String orderPaymentRequestUuid;
 
+    @JsonProperty("paymentProviderType")
+    private PaymentProviderClientType paymentProviderType;
+
     /* Constructors */
     public CreateOrderRefundRequest() {
     }
 
-    public CreateOrderRefundRequest(final String orderPaymentRequestUuid) {
+    public CreateOrderRefundRequest(final String orderPaymentRequestUuid, final PaymentProviderClientType paymentProviderType) {
         this.orderPaymentRequestUuid = orderPaymentRequestUuid;
+        this.paymentProviderType = paymentProviderType;
     }
 
     /* Properties getters and setters */
@@ -44,6 +49,14 @@ public class CreateOrderRefundRequest extends AbstractRequestModel {
         this.orderPaymentRequestUuid = orderPaymentRequestUuid;
     }
 
+    public PaymentProviderClientType getPaymentProviderType() {
+        return paymentProviderType;
+    }
+
+    public void setPaymentProviderType(final PaymentProviderClientType paymentProviderType) {
+        this.paymentProviderType = paymentProviderType;
+    }
+
     /* Validation methods */
     @Nonnull
     @Override
@@ -51,6 +64,9 @@ public class CreateOrderRefundRequest extends AbstractRequestModel {
         final List<ErrorResponseModel> errors = new ArrayList<>();
         if (StringUtils.isBlank(getOrderPaymentRequestUuid())) {
             errors.add(new ErrorResponseModel(ErrorType.ORDER_PAYMENT_REQUEST_MISSING_UUID));
+        }
+        if (paymentProviderType == null) {
+            errors.add(new ErrorResponseModel(ErrorType.ORDER_REFUND_REQUEST__MISSING_PAYMENT_PROVIDER_TYPE));
         }
         return errors;
     }
@@ -61,13 +77,14 @@ public class CreateOrderRefundRequest extends AbstractRequestModel {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof GetOrderPaymentRequestStatusRequest)) {
+        if (!(o instanceof CreateOrderRefundRequest)) {
             return false;
         }
-        final GetOrderPaymentRequestStatusRequest that = (GetOrderPaymentRequestStatusRequest) o;
+        final CreateOrderRefundRequest that = (CreateOrderRefundRequest) o;
         final EqualsBuilder builder = new EqualsBuilder();
         builder.appendSuper(super.equals(that));
         builder.append(this.getOrderPaymentRequestUuid(), that.getOrderPaymentRequestUuid());
+        builder.append(this.getPaymentProviderType(), that.getPaymentProviderType());
         return builder.isEquals();
     }
 
@@ -76,6 +93,7 @@ public class CreateOrderRefundRequest extends AbstractRequestModel {
         final HashCodeBuilder builder = new HashCodeBuilder();
         builder.appendSuper(super.hashCode());
         builder.append(this.getOrderPaymentRequestUuid());
+        builder.append(this.getPaymentProviderType());
         return builder.build();
     }
 
@@ -84,6 +102,7 @@ public class CreateOrderRefundRequest extends AbstractRequestModel {
         final ToStringBuilder builder = new ToStringBuilder(this);
         builder.appendSuper(super.toString());
         builder.append("orderPaymentRequestUuid", this.getOrderPaymentRequestUuid());
+        builder.append("paymentProviderType", this.getPaymentProviderType());
         return builder.build();
     }
 }

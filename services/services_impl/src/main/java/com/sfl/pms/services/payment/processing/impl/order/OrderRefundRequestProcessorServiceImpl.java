@@ -2,6 +2,7 @@ package com.sfl.pms.services.payment.processing.impl.order;
 
 import com.sfl.pms.persistence.utility.PersistenceUtilityService;
 import com.sfl.pms.services.common.exception.ServicesRuntimeException;
+import com.sfl.pms.services.payment.common.model.order.OrderPayment;
 import com.sfl.pms.services.payment.common.model.order.request.OrderRefundRequest;
 import com.sfl.pms.services.payment.common.model.order.request.OrderRefundRequestState;
 import com.sfl.pms.services.payment.common.order.request.OrderRefundRequestService;
@@ -44,7 +45,6 @@ public class OrderRefundRequestProcessorServiceImpl implements OrderRefundReques
         // Update state on request
         updateRefundMethodRequestState(orderRefundRequestId, OrderRefundRequestState.PROCESSING);
         try {
-            // Grab data
             return 0l; //Todo: Rub
         } catch (final Exception ex) {
             LOGGER.error("Error occurred during processing order payment request - " + orderRefundRequestId, ex);
@@ -58,18 +58,9 @@ public class OrderRefundRequestProcessorServiceImpl implements OrderRefundReques
     /* Utility methods */
 
     private void updateRefundMethodRequestState(final Long requestId, final OrderRefundRequestState state) {
-        getPersistenceUtilityService().runInNewTransaction(() -> {
+        persistenceUtilityService.runInNewTransaction(() -> {
             final OrderRefundRequest orderRefundRequest = orderRefundRequestService.getById(requestId);
             orderRefundRequestService.updateState(orderRefundRequest.getUuId(), state);
         });
-    }
-
-    /* Properties getters and setters */
-    public PersistenceUtilityService getPersistenceUtilityService() {
-        return persistenceUtilityService;
-    }
-
-    public void setPersistenceUtilityService(final PersistenceUtilityService persistenceUtilityService) {
-        this.persistenceUtilityService = persistenceUtilityService;
     }
 }
