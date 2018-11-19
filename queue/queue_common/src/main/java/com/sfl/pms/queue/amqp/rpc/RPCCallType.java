@@ -11,6 +11,7 @@ public enum RPCCallType {
     START_PAYMENT_METHOD_AUTHORIZATION_PROCESSING("paymentmethodauthorization.processing.start"),
     START_PAYMENT_METHOD_REMOVAL_PROCESSING("paymentmethodremoval.processing.start"),
     START_ORDER_PAYMENT_REQUEST_PROCESSING("orderpaymentrequest.processing.start"),
+    START_ORDER_REFUND_REQUEST_PROCESSING("orderrefundrequest.processing.start"),
     LOYALTY_POINTS_REWARDED("loyalty.rewarded"),
     EMAIL_CAR_WASH_EMPLOYEE_PASSWORD_UPDATED("carwashemployee.password.updated"),
     EMAIL_CAR_WASH_EMPLOYEE_CREATED("carwashemployee.created"),
