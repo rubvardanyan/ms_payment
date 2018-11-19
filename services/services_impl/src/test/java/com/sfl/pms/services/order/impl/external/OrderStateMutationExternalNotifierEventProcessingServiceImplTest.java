@@ -6,6 +6,7 @@ import com.sfl.pms.services.order.external.OrderStateMutationExternalNotifierSer
 import com.sfl.pms.services.order.model.Order;
 import com.sfl.pms.services.order.model.OrderState;
 import com.sfl.pms.services.order.model.payment.provider.OrderProviderPaymentChannel;
+import com.sfl.pms.services.payment.common.model.PaymentState;
 import com.sfl.pms.services.test.AbstractServicesUnitTest;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
@@ -81,7 +82,7 @@ public class OrderStateMutationExternalNotifierEventProcessingServiceImplTest ex
         resetAll();
         // Expectations
         expect(orderService.getOrderById(eq(orderId))).andReturn(order).once();
-        orderStateMutationExternalNotifierService.notifyOrderStateMutation(eq(order.getUuId()), eq(orderState), paymentState, eq(paymentUuid));
+        orderStateMutationExternalNotifierService.notifyOrderStateMutation(eq(order.getUuId()), eq(orderState), PaymentState.PAID, eq(paymentUuid));
         expectLastCall().once();
         // Replay
         replayAll();
