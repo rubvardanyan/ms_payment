@@ -12,6 +12,8 @@ import com.sfl.pms.services.order.model.Order;
 import com.sfl.pms.services.order.model.OrderState;
 import com.sfl.pms.services.order.model.payment.OrderPaymentChannel;
 import com.sfl.pms.services.order.model.payment.provider.OrderProviderPaymentChannel;
+import com.sfl.pms.services.payment.common.model.PaymentState;
+import com.sfl.pms.services.payment.common.model.order.OrderPayment;
 import com.sfl.pms.services.system.concurrency.TaskExecutorService;
 import com.sfl.pms.services.system.event.ApplicationEventDistributionService;
 import org.slf4j.Logger;
@@ -19,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -65,7 +68,14 @@ public class OrderStateMutationExternalNotifierEventProcessingServiceImpl implem
         Assert.notNull(orderState, "Order state should not be null");
         LOGGER.debug("Processing order state updated event, order id - {}, order state - {}", orderId, orderState);
         final Order order = orderService.getOrderById(orderId);
-        orderStateMutationExternalNotifierService.notifyOrderStateMutation(order.getUuId(), orderState, paymentUuid);
+        final PaymentState paymentState = StringUtils.isEmpty(paymentUuid) ? null : order.getPayments().stream().
+                filter(payment -> payment.getUuId().equals(paymentUuid))
+                .findFirst()
+                .map(OrderPayment::getLastState)
+                .orElseThrow(() -> new IllegalStateException(String.format(
+                        "Payment with uuid ='%s' should be associated with order with uuid='%s'", paymentUuid, order.getUuId())
+                ));
+        orderStateMutationExternalNotifierService.notifyOrderStateMutation(order.getUuId(), orderState, paymentState, paymentUuid);
         LOGGER.debug("Successfully processed order state updated event, order id - {}, order state - {}", orderId, orderState);
     }
 
@@ -123,10 +133,10 @@ public class OrderStateMutationExternalNotifierEventProcessingServiceImpl implem
     @Nullable
     private String getPaymentUuidOrNull(@Nonnull final Long orderId) {
         final Order order = orderService.getOrderById(orderId);
-        if(order.getPaymentChannel() != null) {
+        if (order.getPaymentChannel() != null) {
             final OrderPaymentChannel orderPaymentChannel = persistenceUtilityService.initializeAndUnProxy(order.getPaymentChannel());
-            if(orderPaymentChannel instanceof OrderProviderPaymentChannel) {
-                final OrderProviderPaymentChannel orderProviderPaymentChannel = (OrderProviderPaymentChannel)orderPaymentChannel;
+            if (orderPaymentChannel instanceof OrderProviderPaymentChannel) {
+                final OrderProviderPaymentChannel orderProviderPaymentChannel = (OrderProviderPaymentChannel) orderPaymentChannel;
                 return orderProviderPaymentChannel.getPayment().getUuId();
             }
         }

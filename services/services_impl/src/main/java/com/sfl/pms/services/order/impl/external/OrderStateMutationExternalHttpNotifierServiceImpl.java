@@ -3,6 +3,7 @@ package com.sfl.pms.services.order.impl.external;
 import com.sfl.pms.services.common.exception.ServicesRuntimeException;
 import com.sfl.pms.services.order.external.OrderStateMutationExternalNotifierService;
 import com.sfl.pms.services.order.model.OrderState;
+import com.sfl.pms.services.payment.common.model.PaymentState;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -35,6 +36,8 @@ public class OrderStateMutationExternalHttpNotifierServiceImpl implements OrderS
 
     private static final String PARAMETER_NAME_ORDER_STATE = "orderstate";
 
+    private static final String PARAMETER_NAME_TEMPORARY_STATE = "temporarystate";
+
     /* Properties */
     @Value("#{ appProperties['order.mutation.notifier.http.url']}")
     private String externalNotificationHttpUrl;
@@ -48,7 +51,7 @@ public class OrderStateMutationExternalHttpNotifierServiceImpl implements OrderS
     }
 
     @Override
-    public void notifyOrderStateMutation(@Nonnull final String orderUuId, @Nonnull final OrderState orderState, @Nullable final String paymentUuid) {
+    public void notifyOrderStateMutation(@Nonnull final String orderUuId, @Nonnull final OrderState orderState, @Nullable final PaymentState paymentState, @Nullable final String paymentUuid) {
         Assert.notNull(orderUuId, "Order uuid should not be null");
         Assert.notNull(orderState, "Order state should not be null");
         LOGGER.debug("Updating external party using HTTP for order state mutation, order uuid - {}, order state - {}", orderUuId, orderState);
@@ -58,8 +61,11 @@ public class OrderStateMutationExternalHttpNotifierServiceImpl implements OrderS
             final URIBuilder uriBuilder = new URIBuilder(externalNotificationHttpUrl);
             uriBuilder.addParameter(PARAMETER_NAME_ORDER_UUID, orderUuId);
             uriBuilder.addParameter(PARAMETER_NAME_ORDER_STATE, orderState.name());
-            if(paymentUuid != null) {
+            if (paymentUuid != null) {
                 uriBuilder.addParameter(PARAMETER_NAME_PAYMENT_UUID, paymentUuid);
+            }
+            if (paymentState != null) {
+                uriBuilder.addParameter(PARAMETER_NAME_TEMPORARY_STATE, String.valueOf(paymentState.isTemporaryState()));
             }
             // Create HTTP method
             httpGet = new HttpGet(uriBuilder.build());
@@ -71,7 +77,7 @@ public class OrderStateMutationExternalHttpNotifierServiceImpl implements OrderS
             LOGGER.error(message, ex);
             throw new ServicesRuntimeException(message, ex);
         } finally {
-            if(httpGet != null) {
+            if (httpGet != null) {
                 httpGet.releaseConnection();
             }
         }

@@ -2,6 +2,7 @@ package com.sfl.pms.services.order.impl.external;
 
 import com.sfl.pms.services.order.external.OrderStateMutationExternalNotifierService;
 import com.sfl.pms.services.order.model.OrderState;
+import com.sfl.pms.services.payment.common.model.PaymentState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,7 @@ public class OrderStateMutationExternalDummyNotifierServiceImpl implements Order
     }
 
     @Override
-    public void notifyOrderStateMutation(@Nonnull final String orderUuId, @Nonnull final OrderState orderState, @Nullable final String payentUuid) {
+    public void notifyOrderStateMutation(@Nonnull final String orderUuId, @Nonnull final OrderState orderState, final PaymentState paymentState, @Nullable final String payentUuid) {
         Assert.notNull(orderUuId, "Order uuid should not be null");
         Assert.notNull(orderState, "Order state should not be null");
         LOGGER.debug("Swallowing order state mutation, order uuid - {}, order state - {}", orderUuId, orderState);

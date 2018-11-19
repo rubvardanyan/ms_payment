@@ -81,7 +81,7 @@ public class OrderStateMutationExternalNotifierEventProcessingServiceImplTest ex
         resetAll();
         // Expectations
         expect(orderService.getOrderById(eq(orderId))).andReturn(order).once();
-        orderStateMutationExternalNotifierService.notifyOrderStateMutation(eq(order.getUuId()), eq(orderState), eq(paymentUuid));
+        orderStateMutationExternalNotifierService.notifyOrderStateMutation(eq(order.getUuId()), eq(orderState), paymentState, eq(paymentUuid));
         expectLastCall().once();
         // Replay
         replayAll();
