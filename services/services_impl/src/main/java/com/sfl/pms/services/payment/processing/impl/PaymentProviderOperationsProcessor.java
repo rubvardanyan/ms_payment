@@ -78,6 +78,14 @@ public interface PaymentProviderOperationsProcessor {
     @Nonnull
     String generatePaymentRedirectUrl(@Nonnull Long paymentId, @Nonnull boolean createRecurringContract);
 
+    /**
+     * Refunds already paid payment
+     *
+     * @param paymentId payment id to refund
+     */
+    @Nonnull
+    void refundPayment(@Nonnull Long paymentId);
+
 
     /* Inner classes */
     class CustomerPaymentMethodRemovalData implements Serializable {

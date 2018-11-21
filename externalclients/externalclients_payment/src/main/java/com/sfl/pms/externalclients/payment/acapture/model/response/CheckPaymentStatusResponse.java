@@ -19,6 +19,9 @@ import java.math.BigDecimal;
 public class CheckPaymentStatusResponse extends AbstractAcaptureResponseModel {
 
     /* Properties */
+    @JsonProperty("id")
+    private String paymentReference;
+
     @JsonProperty("paymentType")
     private String paymentType;
 
@@ -123,6 +126,14 @@ public class CheckPaymentStatusResponse extends AbstractAcaptureResponseModel {
         this.reusltDetails = reusltDetails;
     }
 
+    public String getPaymentReference() {
+        return paymentReference;
+    }
+
+    public void setPaymentReference(final String paymentReference) {
+        this.paymentReference = paymentReference;
+    }
+
     /* Equals, HashCode and ToString */
     @Override
     public boolean equals(final Object o) {
@@ -134,6 +145,7 @@ public class CheckPaymentStatusResponse extends AbstractAcaptureResponseModel {
 
         return new EqualsBuilder()
                 .appendSuper(super.equals(o))
+                .append(paymentReference, that.paymentReference)
                 .append(paymentType, that.paymentType)
                 .append(paymentBrand, that.paymentBrand)
                 .append(amount, that.amount)
@@ -150,6 +162,7 @@ public class CheckPaymentStatusResponse extends AbstractAcaptureResponseModel {
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
                 .appendSuper(super.hashCode())
+                .append(paymentReference)
                 .append(paymentType)
                 .append(paymentBrand)
                 .append(amount)
@@ -166,6 +179,7 @@ public class CheckPaymentStatusResponse extends AbstractAcaptureResponseModel {
     public String toString() {
         return new ToStringBuilder(this)
                 .appendSuper(super.toString())
+                .append("paymentReference", paymentReference)
                 .append("paymentType", paymentType)
                 .append("paymentBrand", paymentBrand)
                 .append("amount", amount)

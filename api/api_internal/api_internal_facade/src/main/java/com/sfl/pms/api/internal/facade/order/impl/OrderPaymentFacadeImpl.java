@@ -6,11 +6,14 @@ import com.sfl.pms.core.api.internal.model.common.result.ErrorType;
 import com.sfl.pms.core.api.internal.model.common.result.ResultResponseModel;
 import com.sfl.pms.core.api.internal.model.customer.CustomerModel;
 import com.sfl.pms.core.api.internal.model.order.*;
+import com.sfl.pms.core.api.internal.model.order.request.CreateOrderRefundRequest;
 import com.sfl.pms.core.api.internal.model.order.request.CreateOrderRequest;
 import com.sfl.pms.core.api.internal.model.order.request.GetOrderPaymentRequestStatusRequest;
 import com.sfl.pms.core.api.internal.model.order.request.RePayOrderRequest;
 import com.sfl.pms.core.api.internal.model.order.response.CreateOrderPaymentResponse;
+import com.sfl.pms.core.api.internal.model.order.response.CreateOrderRefundResponse;
 import com.sfl.pms.core.api.internal.model.order.response.GetOrderPaymentRequestStatusResponse;
+import com.sfl.pms.core.api.internal.model.provider.PaymentProviderClientType;
 import com.sfl.pms.services.common.exception.ServicesRuntimeException;
 import com.sfl.pms.services.currency.model.Currency;
 import com.sfl.pms.services.customer.CustomerService;
@@ -23,10 +26,13 @@ import com.sfl.pms.services.payment.common.dto.order.request.OrderPaymentRequest
 import com.sfl.pms.services.payment.common.dto.order.request.OrderRequestPaymentMethodDto;
 import com.sfl.pms.services.payment.common.dto.order.request.OrderRequestRedirectPaymentMethodDto;
 import com.sfl.pms.services.payment.common.event.order.StartOrderPaymentRequestProcessingCommandEvent;
+import com.sfl.pms.services.payment.common.event.order.StartOrderRefundRequestProcessingCommandEvent;
 import com.sfl.pms.services.payment.common.model.order.request.OrderPaymentRequest;
 import com.sfl.pms.services.payment.common.model.order.request.OrderPaymentRequestState;
+import com.sfl.pms.services.payment.common.model.order.request.OrderRefundRequest;
 import com.sfl.pms.services.payment.common.model.order.request.OrderRequestPaymentMethod;
 import com.sfl.pms.services.payment.common.order.request.OrderPaymentRequestService;
+import com.sfl.pms.services.payment.common.order.request.OrderRefundRequestService;
 import com.sfl.pms.services.payment.method.model.PaymentMethodType;
 import com.sfl.pms.services.payment.provider.model.PaymentProviderType;
 import com.sfl.pms.services.system.event.ApplicationEventDistributionService;
@@ -60,6 +66,9 @@ public class OrderPaymentFacadeImpl implements OrderPaymentFacade {
 
     @Autowired
     private OrderPaymentRequestService orderPaymentRequestService;
+
+    @Autowired
+    private OrderRefundRequestService orderRefundRequestService;
 
     @Autowired
     private ApplicationEventDistributionService applicationEventDistributionService;
@@ -148,6 +157,23 @@ public class OrderPaymentFacadeImpl implements OrderPaymentFacade {
         return new ResultResponseModel<>(response);
     }
 
+    @Nonnull
+    @Override
+    public ResultResponseModel<CreateOrderRefundResponse> refundOrder(@Nonnull final CreateOrderRefundRequest request) {
+        Assert.notNull(request, "Request should not be null");
+        LOGGER.debug("Processing refund order  request  - {}", request);
+        final List<ErrorResponseModel> errors = request.validateRequiredFields();
+        if (errors.size() != 0) {
+            return new ResultResponseModel<>(errors);
+        }
+        final OrderPaymentRequest orderPaymentRequest = orderPaymentRequestService.getOrderPaymentRequestByUuId(request.getOrderPaymentRequestUuid());
+        final OrderRefundRequest orderRefundRequest = createOrderRefundRequestAndStartProcessing(orderPaymentRequest.getId(), request.getPaymentProviderType());
+        // Create response
+        final CreateOrderRefundResponse response = new CreateOrderRefundResponse(orderRefundRequest.getUuId());
+        LOGGER.debug("Successfully created response - {} for refund order request - {}", response, request);
+        return new ResultResponseModel<>(response);
+    }
+
     /* Utility methods */
     private OrderPaymentRequest createOrderPaymentRequestAndStartProcessing(final Order order, final OrderRequestPaymentMethodModel paymentMethodModel, final boolean storePaymentMethod, final String clientIpAddress) {
         // Create order request payment method DTO
@@ -158,6 +184,14 @@ public class OrderPaymentFacadeImpl implements OrderPaymentFacade {
         // Publish event
         applicationEventDistributionService.publishAsynchronousEvent(new StartOrderPaymentRequestProcessingCommandEvent(orderPaymentRequest.getId()));
         return orderPaymentRequest;
+    }
+
+    private OrderRefundRequest createOrderRefundRequestAndStartProcessing(final Long orderPaymentRequestId, final PaymentProviderClientType paymentProviderClientType) {
+        // Create order refund request
+        final OrderRefundRequest orderRefundRequest = orderRefundRequestService.create(orderPaymentRequestId, PaymentProviderType.valueOf(paymentProviderClientType.name()));
+        // Publish event
+        applicationEventDistributionService.publishAsynchronousEvent(new StartOrderRefundRequestProcessingCommandEvent(orderRefundRequest.getId()));
+        return orderRefundRequest;
     }
 
     private final List<ErrorResponseModel> validateOrderIsNotPaid(final Order order) {

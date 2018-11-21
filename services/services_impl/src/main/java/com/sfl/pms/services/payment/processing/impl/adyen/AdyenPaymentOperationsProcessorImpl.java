@@ -248,6 +248,13 @@ public class AdyenPaymentOperationsProcessorImpl implements AdyenPaymentOperatio
         return redirectUrl;
     }
 
+    @Nonnull
+    @Override
+    public void refundPayment(@Nonnull final Long paymentId) {
+        LOGGER.error("Payment refund is not supported by adyen payment provider");
+        throw new UnsupportedOperationException("Payment refund is not supported by adyen payment provider");
+    }
+
     /* Utility methods */
     private void assertPaymentNotNull(final Payment payment) {
         Assert.notNull(payment, "Payment should not be null");

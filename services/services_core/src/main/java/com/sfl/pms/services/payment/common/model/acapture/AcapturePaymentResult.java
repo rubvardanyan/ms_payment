@@ -31,6 +31,9 @@ public class AcapturePaymentResult extends PaymentResult {
     @Column(name = "result_description", nullable = false)
     private String resultDescription;
 
+    @Column(name = "payment_reference")
+    private String paymentReference;
+
     /* Constructor */
     public AcapturePaymentResult() {
         setType(PaymentProviderType.ACAPTURE);
@@ -53,6 +56,14 @@ public class AcapturePaymentResult extends PaymentResult {
         this.resultDescription = resultDescription;
     }
 
+    public String getPaymentReference() {
+        return paymentReference;
+    }
+
+    public void setPaymentReference(final String paymentReference) {
+        this.paymentReference = paymentReference;
+    }
+
     /* Equals, HashCode and ToString */
     @Override
     public boolean equals(final Object o) {
@@ -66,6 +77,7 @@ public class AcapturePaymentResult extends PaymentResult {
                 .appendSuper(super.equals(o))
                 .append(resultCode, that.resultCode)
                 .append(resultDescription, that.resultDescription)
+                .append(paymentReference, that.paymentReference)
                 .isEquals();
     }
 
@@ -75,6 +87,7 @@ public class AcapturePaymentResult extends PaymentResult {
                 .appendSuper(super.hashCode())
                 .append(resultCode)
                 .append(resultDescription)
+                .append(paymentReference)
                 .toHashCode();
     }
 
@@ -84,6 +97,7 @@ public class AcapturePaymentResult extends PaymentResult {
                 .appendSuper(super.toString())
                 .append("resultCode", resultCode)
                 .append("resultDescription", resultDescription)
+                .append("paymentReference", paymentReference)
                 .toString();
     }
 }
