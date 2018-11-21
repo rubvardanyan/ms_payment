@@ -8,9 +8,11 @@ import com.sfl.pms.externalclients.payment.acapture.model.payment.AcaptureAmount
 import com.sfl.pms.externalclients.payment.acapture.model.payment.PaymentType;
 import com.sfl.pms.externalclients.payment.acapture.model.request.CheckPaymentStatusRequest;
 import com.sfl.pms.externalclients.payment.acapture.model.request.CreateCheckoutRequest;
+import com.sfl.pms.externalclients.payment.acapture.model.request.SubmitCaptureRequest;
 import com.sfl.pms.externalclients.payment.acapture.model.request.SubmitRefundRequest;
 import com.sfl.pms.externalclients.payment.acapture.model.response.CheckPaymentStatusResponse;
 import com.sfl.pms.externalclients.payment.acapture.model.response.CreateCheckoutResponse;
+import com.sfl.pms.externalclients.payment.acapture.model.response.SubmitCaptureResponse;
 import com.sfl.pms.externalclients.payment.acapture.model.response.SubmitRefundResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,6 +125,24 @@ public class AcaptureApiCommunicatorImpl implements AcaptureApiCommunicator {
         return responseEntity.getBody();
     }
 
+    @Nonnull
+    @Override
+    public SubmitCaptureResponse submitCapture(@Nonnull final SubmitCaptureRequest request){
+        assertSubmitCaptureRequest(request);
+        final String requestUrl = url + AcaptureApiPaths.PAYMENTS + "/" + request.getCheckoutId();
+        final MultiValueMap<String, String> valueMap = getValueMapWithAuthorizationValues(request.getAuthenticationModel());
+        valueMap.add(AcaptureAttributeMappings.AMOUNT, AMOUNT_FORMATTER.format(request.getAmountModel().getAmount()));
+        valueMap.add(AcaptureAttributeMappings.CURRENCY, request.getAmountModel().getCurrency());
+        valueMap.add(AcaptureAttributeMappings.PAYMENT_TYPE, PaymentType.CAPTURE.getCode());
+        final HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(valueMap, getDefaultHeaders());
+        final ResponseEntity<SubmitCaptureResponse> responseEntity = restClient.postForEntity(requestUrl, entity, SubmitCaptureResponse.class);
+        if(responseEntity.getStatusCode() != HttpStatus.OK) {
+            LOGGER.error("Invalid response status returned - {}", responseEntity);
+            throw new IllegalStateException("Invalid response status returned - " + responseEntity);
+        }
+        return responseEntity.getBody();
+    }
+
     /* Utility methods */
     private void assertCreateCheckoutRequest(final CreateCheckoutRequest request) {
         Assert.notNull(request, "Checkout request should not be null");
@@ -138,6 +158,13 @@ public class AcaptureApiCommunicatorImpl implements AcaptureApiCommunicator {
     }
 
     private void assertSubmitRefundRequest(final SubmitRefundRequest request) {
+        Assert.notNull(request, "Submit refund request should not be null");
+        Assert.notNull(request.getCheckoutId(), "Checkout id should not be null");
+        assertAmountModel(request.getAmountModel());
+        assertAuthenticationModel(request.getAuthenticationModel());
+    }
+
+    private void assertSubmitCaptureRequest(final SubmitCaptureRequest request) {
         Assert.notNull(request, "Submit refund request should not be null");
         Assert.notNull(request.getCheckoutId(), "Checkout id should not be null");
         assertAmountModel(request.getAmountModel());

@@ -6,6 +6,7 @@ import com.sfl.pms.services.payment.common.dto.acapture.AcapturePaymentResultDto
 import com.sfl.pms.services.payment.common.impl.status.PaymentResultStatusMapper;
 import com.sfl.pms.services.payment.common.model.Payment;
 import com.sfl.pms.services.payment.common.model.PaymentResultStatus;
+import com.sfl.pms.services.payment.common.model.PaymentState;
 import com.sfl.pms.services.payment.common.model.acapture.AcapturePaymentProviderMetadata;
 import com.sfl.pms.services.payment.metadata.acapture.AcapturePaymentProviderMetadataService;
 import com.sfl.pms.services.payment.processing.impl.PaymentResultProcessor;
@@ -14,7 +15,6 @@ import com.sfl.pms.services.payment.redirect.acapture.AcaptureRedirectResultServ
 import com.sfl.pms.services.payment.redirect.model.PaymentProviderRedirectResult;
 import com.sfl.pms.services.payment.redirect.model.PaymentProviderRedirectResultState;
 import com.sfl.pms.services.payment.redirect.model.acapture.AcaptureRedirectResult;
-import com.sfl.pms.services.payment.redirect.model.adyen.AdyenRedirectResult;
 import com.sfl.pms.services.util.mutable.MutableHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,6 +82,10 @@ public class AcaptureRedirectResultProcessorImpl implements AcaptureRedirectResu
         final PaymentResultStatus paymentStatus = paymentResultStatusMapper.getPaymentResultStatusForAcapturePaymentStatus(acapturePaymentResultDto.getResultCode());
         acapturePaymentResultDto.setStatus(paymentResultStatusMapper.getPaymentResultStatusForAcapturePaymentStatus(acapturePaymentResultDto.getResultCode()));
         paymentResultProcessor.processPaymentResult(payment.getId(), null, acaptureRedirectResult.getId(), acapturePaymentResultDto);
+        final Payment updatedPayment = paymentService.getPaymentById(payment.getId());
+        if(updatedPayment.getLastState().equals(PaymentState.PAID)) {
+            acapturePaymentProviderIntegrationService.submitCapture(updatedPayment.getId());
+        }
         return PaymentProviderRedirectResultState.PROCESSED;
     }
 

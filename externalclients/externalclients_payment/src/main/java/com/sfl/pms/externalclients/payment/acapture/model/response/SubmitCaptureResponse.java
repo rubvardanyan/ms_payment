@@ -6,6 +6,7 @@ package com.sfl.pms.externalclients.payment.acapture.model.response;
  * Date: 11/19/18
  * Time: 10:15 PM
  */
-public class SubmitRefundResponse extends AbstractAcaptureResponseModel {
+public class SubmitCaptureResponse extends AbstractAcaptureResponseModel {
+
 
 }

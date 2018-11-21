@@ -32,4 +32,6 @@ public interface AcapturePaymentProviderIntegrationService {
     @Nonnull
     void submitRefund(@Nonnull final Long paymentId);
 
+    @Nonnull
+    void submitCapture(@Nonnull final Long paymentId);
 }
