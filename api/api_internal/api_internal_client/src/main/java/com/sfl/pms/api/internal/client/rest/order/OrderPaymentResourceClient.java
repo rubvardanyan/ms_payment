@@ -53,5 +53,5 @@ public interface OrderPaymentResourceClient {
      * @return response
      */
     @Nonnull
-    ResultResponseModel<CreateOrderRefundResponse> createOrder(@Nonnull final CreateOrderRefundRequest request);
+    ResultResponseModel<CreateOrderRefundResponse> refund(@Nonnull final CreateOrderRefundRequest request);
 }

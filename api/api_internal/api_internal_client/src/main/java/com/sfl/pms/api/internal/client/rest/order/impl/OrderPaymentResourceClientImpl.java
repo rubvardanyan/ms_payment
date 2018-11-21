@@ -87,7 +87,7 @@ public class OrderPaymentResourceClientImpl extends AbstractResourceClient imple
 
     @Nonnull
     @Override
-    public ResultResponseModel<CreateOrderRefundResponse> createOrder(@Nonnull final CreateOrderRefundRequest request){
+    public ResultResponseModel<CreateOrderRefundResponse> refund(@Nonnull final CreateOrderRefundRequest request){
         return getClient()
                 .target(getApiPath())
                 .path(RESOURCE_BASE_PATH)
