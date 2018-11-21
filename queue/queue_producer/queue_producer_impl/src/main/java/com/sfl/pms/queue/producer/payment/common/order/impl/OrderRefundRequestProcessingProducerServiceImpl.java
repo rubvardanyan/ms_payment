@@ -42,7 +42,7 @@ public class OrderRefundRequestProcessingProducerServiceImpl implements OrderRef
 
     @Override
     public void afterPropertiesSet() {
-        applicationEventDistributionService.subscribe(new CustomerPaymentMethodAuthorizationRequestCreatedEventListener());
+        applicationEventDistributionService.subscribe(new OrderRefundRequestRequestCreatedEventListener());
     }
 
     @Override
@@ -73,10 +73,10 @@ public class OrderRefundRequestProcessingProducerServiceImpl implements OrderRef
     }
 
     /* Inner classes */
-    private class CustomerPaymentMethodAuthorizationRequestCreatedEventListener extends StartOrderRefundRequestProcessingCommandEventListenerAdapter {
+    private class OrderRefundRequestRequestCreatedEventListener extends StartOrderRefundRequestProcessingCommandEventListenerAdapter {
 
         /* Constructors */
-        public CustomerPaymentMethodAuthorizationRequestCreatedEventListener() {
+        public OrderRefundRequestRequestCreatedEventListener() {
         }
 
         @Override

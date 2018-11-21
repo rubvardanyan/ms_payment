@@ -46,6 +46,7 @@
 
         <!-- Order payment request -->
         <class>com.sfl.pms.services.payment.common.model.order.request.OrderPaymentRequest</class>
+        <class>com.sfl.pms.services.payment.common.model.order.request.OrderRefundRequest</class>
         <class>com.sfl.pms.services.payment.common.model.order.request.OrderRequestPaymentMethod</class>
         <class>com.sfl.pms.services.payment.common.model.order.request.OrderRequestCustomerPaymentMethod</class>
         <class>com.sfl.pms.services.payment.common.model.order.request.OrderRequestEncryptedPaymentMethod</class>
