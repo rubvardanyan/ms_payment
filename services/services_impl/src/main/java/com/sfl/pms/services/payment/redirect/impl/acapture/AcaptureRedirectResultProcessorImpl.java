@@ -84,7 +84,9 @@ public class AcaptureRedirectResultProcessorImpl implements AcaptureRedirectResu
         paymentResultProcessor.processPaymentResult(payment.getId(), null, acaptureRedirectResult.getId(), acapturePaymentResultDto);
         final Payment updatedPayment = paymentService.getPaymentById(payment.getId());
         if(updatedPayment.getLastState().equals(PaymentState.PAID)) {
-            acapturePaymentProviderIntegrationService.submitCapture(updatedPayment.getId());
+            if(updatedPayment.getConfirmedPaymentMethodType().getAcapturePaymentMethodType().isCaptureRequired()){
+                acapturePaymentProviderIntegrationService.submitCapture(updatedPayment.getId());
+            }
         }
         return PaymentProviderRedirectResultState.PROCESSED;
     }
