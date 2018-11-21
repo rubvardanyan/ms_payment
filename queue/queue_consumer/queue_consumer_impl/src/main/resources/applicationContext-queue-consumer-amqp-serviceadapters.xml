@@ -21,6 +21,7 @@
                 <ref bean="orderPaymentRequestProcessingConsumerServiceRPCAdapter"/>
                 <ref bean="paymentProviderNotificationQueueConsumerServiceRPCAdapter"/>
                 <ref bean="paymentProviderRedirectResultQueueConsumerServiceRPCAdapter"/>
+                <ref bean="orderRefundRequestProcessingConsumerServiceRPCAdapter"/>
             </list>
         </property>
     </bean>
