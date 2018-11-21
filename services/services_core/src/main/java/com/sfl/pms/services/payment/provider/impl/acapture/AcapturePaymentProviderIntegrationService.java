@@ -29,4 +29,7 @@ public interface AcapturePaymentProviderIntegrationService {
     @Nonnull
     AcapturePaymentResultDto checkPaymentStatusForRedirectResult(@Nonnull final AcaptureRedirectResult acaptureRedirectResult);
 
+    @Nonnull
+    void submitRefund(@Nonnull final Long paymentId);
+
 }

@@ -7,6 +7,7 @@ import com.sfl.pms.externalclients.payment.acapture.model.payment.AcaptureAmount
 import com.sfl.pms.externalclients.payment.acapture.model.payment.PaymentType;
 import com.sfl.pms.externalclients.payment.acapture.model.request.CheckPaymentStatusRequest;
 import com.sfl.pms.externalclients.payment.acapture.model.request.CreateCheckoutRequest;
+import com.sfl.pms.externalclients.payment.acapture.model.request.SubmitRefundRequest;
 import com.sfl.pms.externalclients.payment.acapture.model.response.CheckPaymentStatusResponse;
 import com.sfl.pms.externalclients.payment.acapture.model.response.CreateCheckoutResponse;
 import com.sfl.pms.externalclients.payment.acapture.model.result.AcaptureResultModel;
@@ -14,7 +15,11 @@ import com.sfl.pms.services.common.exception.ServicesRuntimeException;
 import com.sfl.pms.services.payment.common.PaymentService;
 import com.sfl.pms.services.payment.common.dto.acapture.AcapturePaymentResultDto;
 import com.sfl.pms.services.payment.common.model.Payment;
+import com.sfl.pms.services.payment.common.model.PaymentResult;
+import com.sfl.pms.services.payment.common.model.PaymentResultStatus;
 import com.sfl.pms.services.payment.common.model.acapture.AcapturePaymentProviderMetadata;
+import com.sfl.pms.services.payment.common.model.acapture.AcapturePaymentResult;
+import com.sfl.pms.services.payment.common.model.adyen.AdyenPaymentResult;
 import com.sfl.pms.services.payment.common.model.channel.PaymentProcessingChannel;
 import com.sfl.pms.services.payment.common.model.channel.ProvidedPaymentMethodProcessingChannel;
 import com.sfl.pms.services.payment.common.model.metadata.PaymentProviderMetadata;
@@ -22,6 +27,7 @@ import com.sfl.pms.services.payment.method.acapture.AcapturePaymentMethodSetting
 import com.sfl.pms.services.payment.method.model.PaymentMethodType;
 import com.sfl.pms.services.payment.method.model.acapture.AcapturePaymentMethodSettings;
 import com.sfl.pms.services.payment.method.model.acapture.AcapturePaymentMethodType;
+import com.sfl.pms.services.payment.provider.model.PaymentProviderType;
 import com.sfl.pms.services.payment.redirect.model.acapture.AcaptureRedirectResult;
 import com.sfl.pms.services.payment.settings.acapture.AcapturePaymentSettingsService;
 import com.sfl.pms.services.payment.settings.model.acapture.AcapturePaymentSettings;
@@ -32,6 +38,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import javax.annotation.Nonnull;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * User: Ruben Vardanyan
@@ -55,7 +63,6 @@ public class AcapturePaymentProviderIntegrationServiceImpl implements AcapturePa
 
     @Autowired
     private AcaptureApiCommunicator acaptureApiCommunicator;
-
 
     /* Constructor */
     public AcapturePaymentProviderIntegrationServiceImpl() {
@@ -101,7 +108,44 @@ public class AcapturePaymentProviderIntegrationServiceImpl implements AcapturePa
         final CheckPaymentStatusRequest request = new CheckPaymentStatusRequest(acaptureRedirectResult.getResourcePath(), new AcaptureAuthenticationModel(paymentMethodSettings.getAuthorizationId()));
         final CheckPaymentStatusResponse checkPaymentStatusResponse = acaptureApiCommunicator.checkPaymentStatus(request);
         assertPaymentUuidForStatusCheckResponse(acaptureRedirectResult, checkPaymentStatusResponse);
-        return new AcapturePaymentResultDto(checkPaymentStatusResponse.getResult().getCode(), checkPaymentStatusResponse.getResult().getDescription());
+        return new AcapturePaymentResultDto(checkPaymentStatusResponse.getResult().getCode(), checkPaymentStatusResponse.getResult().getDescription(), checkPaymentStatusResponse.getPaymentReference());
+    }
+
+    @Nonnull
+    @Override
+    public void submitRefund(@Nonnull final Long paymentId) {
+        Assert.notNull(paymentId, "Payment id should not be null");
+        final Payment payment = paymentService.getPaymentById(paymentId);
+        Assert.isTrue(PaymentProviderType.ACAPTURE.equals(payment.getPaymentProviderType()), "Wrong payment provider type for acapture payment");
+        final PaymentMethodType paymentMethodType = payment.getPaymentProcessingChannel().getPaymentMethodTypeIfDefined();
+        if(paymentMethodType == null) {
+            LOGGER.error("Payment method type should not be null for payment with id  - {}", paymentId);
+            throw new ServicesRuntimeException("Payment method type should not be null for payment with id  - " + paymentId);
+        }
+        final AcapturePaymentMethodType acapturePaymentMethodType = paymentMethodType.getAcapturePaymentMethodType();
+        if(acapturePaymentMethodType == null) {
+            LOGGER.error("Acapture payment method type should not be null for payment with id - {}", paymentId);
+            throw new ServicesRuntimeException("Acapture payment method type should not be null for payment with id - " + paymentId);
+        }
+        final PaymentResult  paymentResult = payment.getPaymentResults()
+                .stream()
+                .filter(pr -> pr.getStatus().equals(PaymentResultStatus.PAID))
+                .findFirst()
+                .orElseThrow(() -> {
+                    LOGGER.error("Payment result with paid status lookup failed for payment with id - {}", payment.getId());
+                    throw new ServicesRuntimeException("Payment result with paid status lookup failed for payment with id - " + payment.getId());
+                });
+        Assert.isInstanceOf(AcapturePaymentResult.class, paymentResult, "Payment result of acapture provider type should AcapturePaymentResult");
+        final AcapturePaymentResult acapturePaymentResult = (AcapturePaymentResult) paymentResult;
+        Assert.notNull(acapturePaymentResult.getPaymentReference(), "Payment reference for PAID payment result should not be null");
+        final AcapturePaymentSettings acapturePaymentSettings = acapturePaymentSettingsService.getActivePaymentSettings();
+        final AcapturePaymentMethodSettings paymentMethodSettings = paymentMethodSettingsService.getAcapturePaymentMethodSettingsByPaymentMethodTypeAndPaymentSettingsId(acapturePaymentMethodType, acapturePaymentSettings.getId());
+        final SubmitRefundRequest submitRefundRequest = new SubmitRefundRequest(
+                acapturePaymentResult.getPaymentReference(),
+                new AcaptureAmountModel(payment.getCurrency().getCode(), payment.getAmount()),
+                new AcaptureAuthenticationModel(paymentMethodSettings.getAuthorizationId())
+        );
+        acaptureApiCommunicator.submitRefund(submitRefundRequest);
     }
 
     /* Utility methods */

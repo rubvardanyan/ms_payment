@@ -21,15 +21,18 @@ public class AcapturePaymentResultDto extends PaymentResultDto<AcapturePaymentRe
 
     private String resultDescriptions;
 
+    private String paymentReference;
+
     /* Constructor */
     public AcapturePaymentResultDto() {
         super(PaymentProviderType.ACAPTURE);
     }
 
-    public AcapturePaymentResultDto(final String resultCode, final String resultDescriptions) {
+    public AcapturePaymentResultDto(final String resultCode, final String resultDescriptions, final String paymentReference) {
         super(PaymentProviderType.ACAPTURE);
         this.resultCode = resultCode;
         this.resultDescriptions = resultDescriptions;
+        this.paymentReference = paymentReference;
     }
 
     /* Override methods */
@@ -38,6 +41,7 @@ public class AcapturePaymentResultDto extends PaymentResultDto<AcapturePaymentRe
         super.updateDomainEntityProperties(paymentResult);
         paymentResult.setResultCode(getResultCode());
         paymentResult.setResultDescription(getResultDescriptions());
+        paymentResult.setPaymentReference(getPaymentReference());
     }
 
     /* Properties getters and setters */
@@ -57,6 +61,14 @@ public class AcapturePaymentResultDto extends PaymentResultDto<AcapturePaymentRe
         this.resultDescriptions = resultDescriptions;
     }
 
+    public String getPaymentReference() {
+        return paymentReference;
+    }
+
+    public void setPaymentReference(final String paymentReference) {
+        this.paymentReference = paymentReference;
+    }
+
     /* Equals, HashCode and ToString */
     @Override
     public boolean equals(final Object o) {
@@ -70,6 +82,7 @@ public class AcapturePaymentResultDto extends PaymentResultDto<AcapturePaymentRe
                 .appendSuper(super.equals(o))
                 .append(resultCode, that.resultCode)
                 .append(resultDescriptions, that.resultDescriptions)
+                .append(paymentReference, that.paymentReference)
                 .isEquals();
     }
 
@@ -79,6 +92,7 @@ public class AcapturePaymentResultDto extends PaymentResultDto<AcapturePaymentRe
                 .appendSuper(super.hashCode())
                 .append(resultCode)
                 .append(resultDescriptions)
+                .append(paymentReference)
                 .toHashCode();
     }
 
@@ -88,6 +102,7 @@ public class AcapturePaymentResultDto extends PaymentResultDto<AcapturePaymentRe
                 .appendSuper(super.toString())
                 .append("resultCode", resultCode)
                 .append("resultDescriptions", resultDescriptions)
+                .append("paymentReference", paymentReference)
                 .toString();
     }
 }

@@ -5,10 +5,13 @@ import com.sfl.pms.externalclients.payment.acapture.model.AcaptureApiPaths;
 import com.sfl.pms.externalclients.payment.acapture.model.AcaptureAttributeMappings;
 import com.sfl.pms.externalclients.payment.acapture.model.authentication.AcaptureAuthenticationModel;
 import com.sfl.pms.externalclients.payment.acapture.model.payment.AcaptureAmountModel;
+import com.sfl.pms.externalclients.payment.acapture.model.payment.PaymentType;
 import com.sfl.pms.externalclients.payment.acapture.model.request.CheckPaymentStatusRequest;
 import com.sfl.pms.externalclients.payment.acapture.model.request.CreateCheckoutRequest;
+import com.sfl.pms.externalclients.payment.acapture.model.request.SubmitRefundRequest;
 import com.sfl.pms.externalclients.payment.acapture.model.response.CheckPaymentStatusResponse;
 import com.sfl.pms.externalclients.payment.acapture.model.response.CreateCheckoutResponse;
+import com.sfl.pms.externalclients.payment.acapture.model.response.SubmitRefundResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,8 +83,6 @@ public class AcaptureApiCommunicatorImpl implements AcaptureApiCommunicator {
     public CheckPaymentStatusResponse checkPaymentStatus(@Nonnull final CheckPaymentStatusRequest request) {
         assertCheckPaymentStatusRequest(request);
         LOGGER.debug("Submitting check payment status request with model - {}", request);
-        final MultiValueMap<String, String> valueMap = getValueMapWithAuthorizationValues(request.getAuthenticationModel());
-        final HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(valueMap, getDefaultHeaders());
         final String requestUrl = url +
                 request.getResourcePath() +
                 "?" +
@@ -104,6 +105,24 @@ public class AcaptureApiCommunicatorImpl implements AcaptureApiCommunicator {
         return responseEntity.getBody();
     }
 
+    @Nonnull
+    @Override
+    public SubmitRefundResponse submitRefund(@Nonnull final SubmitRefundRequest request) {
+        assertSubmitRefundRequest(request);
+        final String requestUrl = url + AcaptureApiPaths.PAYMENTS + "/" + request.getCheckoutId();
+        final MultiValueMap<String, String> valueMap = getValueMapWithAuthorizationValues(request.getAuthenticationModel());
+        valueMap.add(AcaptureAttributeMappings.AMOUNT, AMOUNT_FORMATTER.format(request.getAmountModel().getAmount()));
+        valueMap.add(AcaptureAttributeMappings.CURRENCY, request.getAmountModel().getCurrency());
+        valueMap.add(AcaptureAttributeMappings.PAYMENT_TYPE, PaymentType.REFUND.getCode());
+        final HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(valueMap, getDefaultHeaders());
+        final ResponseEntity<SubmitRefundResponse> responseEntity = restClient.postForEntity(requestUrl, entity, SubmitRefundResponse.class);
+        if(responseEntity.getStatusCode() != HttpStatus.OK) {
+            LOGGER.error("Invalid response status returned - {}", responseEntity);
+            throw new IllegalStateException("Invalid response status returned - " + responseEntity);
+        }
+        return responseEntity.getBody();
+    }
+
     /* Utility methods */
     private void assertCreateCheckoutRequest(final CreateCheckoutRequest request) {
         Assert.notNull(request, "Checkout request should not be null");
@@ -115,6 +134,13 @@ public class AcaptureApiCommunicatorImpl implements AcaptureApiCommunicator {
     private void assertCheckPaymentStatusRequest(final CheckPaymentStatusRequest request) {
         Assert.notNull(request, "Check payment status request should not be null");
         Assert.notNull(request.getResourcePath(), "Resource path in check payment status request should not be null ");
+        assertAuthenticationModel(request.getAuthenticationModel());
+    }
+
+    private void assertSubmitRefundRequest(final SubmitRefundRequest request) {
+        Assert.notNull(request, "Submit refund request should not be null");
+        Assert.notNull(request.getCheckoutId(), "Checkout id should not be null");
+        assertAmountModel(request.getAmountModel());
         assertAuthenticationModel(request.getAuthenticationModel());
     }
 
