@@ -3,13 +3,13 @@ package com.sfl.pms.services.payment.processing.impl.acapture;
 import com.sfl.pms.services.payment.common.PaymentService;
 import com.sfl.pms.services.payment.common.dto.PaymentResultDto;
 import com.sfl.pms.services.payment.common.dto.acapture.AcapturePaymentProviderMetadataDto;
+import com.sfl.pms.services.payment.common.dto.acapture.AcaptureRefundResultDto;
+import com.sfl.pms.services.payment.common.impl.status.PaymentResultStatusMapper;
 import com.sfl.pms.services.payment.common.model.Payment;
 import com.sfl.pms.services.payment.common.model.PaymentResult;
-import com.sfl.pms.services.payment.common.model.acapture.AcapturePaymentProviderMetadata;
 import com.sfl.pms.services.payment.common.model.channel.ProvidedPaymentMethodProcessingChannel;
-import com.sfl.pms.services.payment.common.model.metadata.PaymentProviderMetadata;
+import com.sfl.pms.services.payment.common.model.order.request.OrderRefundRequestState;
 import com.sfl.pms.services.payment.provider.impl.acapture.AcapturePaymentProviderIntegrationService;
-import com.sfl.pms.services.payment.provider.model.PaymentProviderType;
 import com.sfl.pms.services.payment.settings.acapture.AcapturePaymentSettingsService;
 import com.sfl.pms.services.payment.settings.model.acapture.AcapturePaymentSettings;
 import org.slf4j.Logger;
@@ -42,6 +42,9 @@ public class AcapturePaymentOperationsProcessorImpl implements AcapturePaymentOp
 
     @Autowired
     private AcapturePaymentSettingsService acapturePaymentSettingsService;
+
+    @Autowired
+    private PaymentResultStatusMapper paymentResultStatusMapper;
 
 
     /* Constructor */
@@ -102,9 +105,10 @@ public class AcapturePaymentOperationsProcessorImpl implements AcapturePaymentOp
 
     @Nonnull
     @Override
-    public void refundPayment(@Nonnull final Long paymentId) {
+    public OrderRefundRequestState refundPayment(@Nonnull final Long paymentId) {
         Assert.notNull(paymentId, "Payment id should not be null");
-        acapturePaymentProviderIntegrationService.submitRefund(paymentId);
+        final AcaptureRefundResultDto acaptureRefundResultDto = acapturePaymentProviderIntegrationService.submitRefund(paymentId);
+        return paymentResultStatusMapper.getRefundResultStatusForAcaptureRefundStatus(acaptureRefundResultDto.getResultCode());
     }
 
     /* Utility methods */

@@ -11,9 +11,11 @@ import com.sfl.pms.externalclients.payment.acapture.model.request.SubmitCaptureR
 import com.sfl.pms.externalclients.payment.acapture.model.request.SubmitRefundRequest;
 import com.sfl.pms.externalclients.payment.acapture.model.response.CheckPaymentStatusResponse;
 import com.sfl.pms.externalclients.payment.acapture.model.response.CreateCheckoutResponse;
+import com.sfl.pms.externalclients.payment.acapture.model.response.SubmitRefundResponse;
 import com.sfl.pms.services.common.exception.ServicesRuntimeException;
 import com.sfl.pms.services.payment.common.PaymentService;
 import com.sfl.pms.services.payment.common.dto.acapture.AcapturePaymentResultDto;
+import com.sfl.pms.services.payment.common.dto.acapture.AcaptureRefundResultDto;
 import com.sfl.pms.services.payment.common.model.Payment;
 import com.sfl.pms.services.payment.common.model.PaymentResult;
 import com.sfl.pms.services.payment.common.model.PaymentResultStatus;
@@ -83,7 +85,7 @@ public class AcapturePaymentProviderIntegrationServiceImpl implements AcapturePa
         createCheckoutRequest.setAuthenticationModel(new AcaptureAuthenticationModel(paymentMethodSettings.getAuthorizationId()));
         createCheckoutRequest.setPaymentUuid(payment.getUuId());
         final CreateCheckoutResponse checkoutResponse = acaptureApiCommunicator.createCheckout(createCheckoutRequest);
-        if(!AcaptureStatusCodes.CHECKOUT_SUCCESSFULLY_CREATED.getCode().equals(checkoutResponse.getResult().getCode())) {
+        if (!AcaptureStatusCodes.CHECKOUT_SUCCESSFULLY_CREATED.getCode().equals(checkoutResponse.getResult().getCode())) {
             LOGGER.error("Not success status code received during checkout creation with request - {}, response - {}", createCheckoutRequest, checkoutResponse);
             throw new ServicesRuntimeException("Not success status code received during checkout creation with request - " + createCheckoutRequest + " response - " + checkoutResponse);
         }
@@ -108,21 +110,21 @@ public class AcapturePaymentProviderIntegrationServiceImpl implements AcapturePa
 
     @Nonnull
     @Override
-    public void submitRefund(@Nonnull final Long paymentId) {
+    public AcaptureRefundResultDto submitRefund(@Nonnull final Long paymentId) {
         Assert.notNull(paymentId, "Payment id should not be null");
         final Payment payment = paymentService.getPaymentById(paymentId);
         Assert.isTrue(PaymentProviderType.ACAPTURE.equals(payment.getPaymentProviderType()), "Wrong payment provider type for acapture payment");
         final PaymentMethodType paymentMethodType = payment.getPaymentProcessingChannel().getPaymentMethodTypeIfDefined();
-        if(paymentMethodType == null) {
+        if (paymentMethodType == null) {
             LOGGER.error("Payment method type should not be null for payment with id  - {}", paymentId);
             throw new ServicesRuntimeException("Payment method type should not be null for payment with id  - " + paymentId);
         }
         final AcapturePaymentMethodType acapturePaymentMethodType = paymentMethodType.getAcapturePaymentMethodType();
-        if(acapturePaymentMethodType == null) {
+        if (acapturePaymentMethodType == null) {
             LOGGER.error("Acapture payment method type should not be null for payment with id - {}", paymentId);
             throw new ServicesRuntimeException("Acapture payment method type should not be null for payment with id - " + paymentId);
         }
-        final PaymentResult  paymentResult = payment.getPaymentResults()
+        final PaymentResult paymentResult = payment.getPaymentResults()
                 .stream()
                 .filter(pr -> pr.getStatus().equals(PaymentResultStatus.PAID))
                 .findFirst()
@@ -140,25 +142,26 @@ public class AcapturePaymentProviderIntegrationServiceImpl implements AcapturePa
                 new AcaptureAmountModel(payment.getCurrency().getCode(), payment.getAmount()),
                 new AcaptureAuthenticationModel(paymentMethodSettings.getAuthorizationId())
         );
-        acaptureApiCommunicator.submitRefund(submitRefundRequest);
+        final SubmitRefundResponse response = acaptureApiCommunicator.submitRefund(submitRefundRequest);
+        return new AcaptureRefundResultDto(response.getResult().getCode(), response.getResult().getDescription());
     }
 
     @Nonnull
     @Override
-    public void submitCapture(@Nonnull final Long paymentId){
+    public void submitCapture(@Nonnull final Long paymentId) {
         Assert.notNull(paymentId, "Payment id should not be null");
         final Payment payment = paymentService.getPaymentById(paymentId);
         final PaymentMethodType paymentMethodType = payment.getPaymentProcessingChannel().getPaymentMethodTypeIfDefined();
-        if(paymentMethodType == null) {
+        if (paymentMethodType == null) {
             LOGGER.error("Payment method type should not be null for payment with id  - {}", paymentId);
             throw new ServicesRuntimeException("Payment method type should not be null for payment with id  - " + paymentId);
         }
         final AcapturePaymentMethodType acapturePaymentMethodType = paymentMethodType.getAcapturePaymentMethodType();
-        if(acapturePaymentMethodType == null) {
+        if (acapturePaymentMethodType == null) {
             LOGGER.error("Acapture payment method type should not be null for payment with id - {}", paymentId);
             throw new ServicesRuntimeException("Acapture payment method type should not be null for payment with id - " + paymentId);
         }
-        final PaymentResult  paymentResult = payment.getPaymentResults()
+        final PaymentResult paymentResult = payment.getPaymentResults()
                 .stream()
                 .filter(pr -> pr.getStatus().equals(PaymentResultStatus.PAID))
                 .findFirst()
@@ -181,7 +184,7 @@ public class AcapturePaymentProviderIntegrationServiceImpl implements AcapturePa
 
     /* Utility methods */
     private void assertPaymentUuidForStatusCheckResponse(final AcaptureRedirectResult redirectResult, final CheckPaymentStatusResponse response) {
-        if(!redirectResult.getPayment().getUuId().equals(response.getMerchantInvoiceId())) {
+        if (!redirectResult.getPayment().getUuId().equals(response.getMerchantInvoiceId())) {
             LOGGER.error("Wrong payment uuid retrieved from status check response - {}", response);
             throw new ServicesRuntimeException("Wrong payment uuid retrieved from status check response - " + response);
         }

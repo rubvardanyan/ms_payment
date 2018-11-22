@@ -1,6 +1,7 @@
 package com.sfl.pms.services.payment.provider.impl.acapture;
 
 import com.sfl.pms.services.payment.common.dto.acapture.AcapturePaymentResultDto;
+import com.sfl.pms.services.payment.common.dto.acapture.AcaptureRefundResultDto;
 import com.sfl.pms.services.payment.redirect.model.acapture.AcaptureRedirectResult;
 
 import javax.annotation.Nonnull;
@@ -30,7 +31,7 @@ public interface AcapturePaymentProviderIntegrationService {
     AcapturePaymentResultDto checkPaymentStatusForRedirectResult(@Nonnull final AcaptureRedirectResult acaptureRedirectResult);
 
     @Nonnull
-    void submitRefund(@Nonnull final Long paymentId);
+    AcaptureRefundResultDto submitRefund(@Nonnull final Long paymentId);
 
     @Nonnull
     void submitCapture(@Nonnull final Long paymentId);

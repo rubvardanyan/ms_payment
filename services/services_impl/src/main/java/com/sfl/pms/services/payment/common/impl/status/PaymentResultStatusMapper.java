@@ -2,6 +2,7 @@ package com.sfl.pms.services.payment.common.impl.status;
 
 import com.sfl.pms.externalclients.payment.adyen.model.datatypes.AdyenPaymentStatus;
 import com.sfl.pms.services.payment.common.model.PaymentResultStatus;
+import com.sfl.pms.services.payment.common.model.order.request.OrderRefundRequestState;
 
 /**
  * User: Ruben Dilanyan
@@ -21,8 +22,17 @@ public interface PaymentResultStatusMapper {
 
     /**
      * Maps Acapture payment status check response result code to payment result status
+     *
      * @param acapturePaymentStatus
      * @return
      */
     PaymentResultStatus getPaymentResultStatusForAcapturePaymentStatus(final String acapturePaymentStatus);
+
+    /**
+     * Maps Acapture refund status check response result code to refund result status
+     *
+     * @param acaptureRefundStatus
+     * @return
+     */
+    OrderRefundRequestState getRefundResultStatusForAcaptureRefundStatus(final String acaptureRefundStatus);
 }

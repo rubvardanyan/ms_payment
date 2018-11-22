@@ -14,8 +14,7 @@ public interface OrderRefundRequestProcessorService {
      * Creates and processes order refund
      *
      * @param orderRefundRequestId
-     * @return orderRefundRequestId
      */
     @Nonnull
-    Long processOrderRefundRequest(@Nonnull final Long orderRefundRequestId);
+    void processOrderRefundRequest(@Nonnull final Long orderRefundRequestId);
 }

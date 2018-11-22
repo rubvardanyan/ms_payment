@@ -3,6 +3,7 @@ package com.sfl.pms.services.payment.processing.impl;
 import com.sfl.pms.services.payment.common.dto.PaymentResultDto;
 import com.sfl.pms.services.payment.common.model.Payment;
 import com.sfl.pms.services.payment.common.model.PaymentResult;
+import com.sfl.pms.services.payment.common.model.order.request.OrderRefundRequestState;
 import com.sfl.pms.services.payment.customer.method.dto.CustomerPaymentMethodDto;
 import com.sfl.pms.services.payment.customer.method.dto.CustomerPaymentMethodProviderInformationDto;
 import com.sfl.pms.services.payment.customer.method.model.CustomerPaymentMethod;
@@ -84,7 +85,7 @@ public interface PaymentProviderOperationsProcessor {
      * @param paymentId payment id to refund
      */
     @Nonnull
-    void refundPayment(@Nonnull Long paymentId);
+    OrderRefundRequestState refundPayment(@Nonnull Long paymentId);
 
 
     /* Inner classes */

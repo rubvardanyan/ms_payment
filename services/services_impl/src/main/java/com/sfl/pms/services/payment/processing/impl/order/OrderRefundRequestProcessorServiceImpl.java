@@ -51,7 +51,7 @@ public class OrderRefundRequestProcessorServiceImpl implements OrderRefundReques
 
     @Nonnull
     @Override
-    public Long processOrderRefundRequest(@Nonnull final Long orderRefundRequestId) {
+    public void processOrderRefundRequest(@Nonnull final Long orderRefundRequestId) {
         Assert.notNull(orderRefundRequestId, "Order refund request id should not be null");
         LOGGER.debug("Processing order refund request with id - {}", orderRefundRequestId);
         // Update state on request
@@ -62,8 +62,8 @@ public class OrderRefundRequestProcessorServiceImpl implements OrderRefundReques
             Assert.isTrue(orderRefundRequest.getPaymentProviderType().equals(payment.getPaymentProviderType()), "Refund request payment provider type should match with payment provider type of requested payment");
             Assert.isTrue(payment.getLastState().equals(PaymentState.PAID), "Cannot refund not paid payment");
             final PaymentProviderOperationsProcessor operationsProcessor = getPaymentProviderProcessorForPaymentProviderType(payment.getPaymentProviderType());
-            operationsProcessor.refundPayment(payment.getId());
-            return 0l; //Todo: Rub
+            final OrderRefundRequestState orderRefundRequestState = operationsProcessor.refundPayment(payment.getId());
+            updateRefundMethodRequestState(orderRefundRequestId, orderRefundRequestState);
         } catch (final Exception ex) {
             LOGGER.error("Error occurred during processing order payment request - " + orderRefundRequestId, ex);
             // Update state on request
@@ -79,6 +79,7 @@ public class OrderRefundRequestProcessorServiceImpl implements OrderRefundReques
             final OrderRefundRequest orderRefundRequest = orderRefundRequestService.getById(requestId);
             orderRefundRequestService.updateState(orderRefundRequest.getUuId(), state);
         });
+        //todo: vas call qup-core for status update chack with Hayk
     }
 
     private PaymentProviderOperationsProcessor getPaymentProviderProcessorForPaymentProviderType(final PaymentProviderType paymentProviderType) {

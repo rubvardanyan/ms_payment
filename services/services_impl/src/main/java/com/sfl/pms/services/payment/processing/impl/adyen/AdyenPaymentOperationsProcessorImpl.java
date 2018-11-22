@@ -33,6 +33,7 @@ import com.sfl.pms.services.payment.common.model.adyen.AdyenPaymentResult;
 import com.sfl.pms.services.payment.common.model.channel.CustomerPaymentMethodProcessingChannel;
 import com.sfl.pms.services.payment.common.model.channel.EncryptedPaymentMethodProcessingChannel;
 import com.sfl.pms.services.payment.common.model.channel.PaymentProcessingChannel;
+import com.sfl.pms.services.payment.common.model.order.request.OrderRefundRequestState;
 import com.sfl.pms.services.payment.customer.information.adyen.CustomerAdyenInformationService;
 import com.sfl.pms.services.payment.customer.information.model.adyen.CustomerAdyenInformation;
 import com.sfl.pms.services.payment.customer.method.adyen.CustomerPaymentMethodAdyenInformationService;
@@ -250,7 +251,7 @@ public class AdyenPaymentOperationsProcessorImpl implements AdyenPaymentOperatio
 
     @Nonnull
     @Override
-    public void refundPayment(@Nonnull final Long paymentId) {
+    public OrderRefundRequestState refundPayment(@Nonnull final Long paymentId) {
         LOGGER.error("Payment refund is not supported by adyen payment provider");
         throw new UnsupportedOperationException("Payment refund is not supported by adyen payment provider");
     }
