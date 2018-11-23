@@ -20,6 +20,7 @@ import org.apache.commons.lang3.mutable.MutableObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -49,6 +50,7 @@ public class OrderRefundRequestProcessorServiceImpl implements OrderRefundReques
     private AdyenPaymentOperationsProcessor adyenPaymentOperationsProcessor;
 
     @Autowired
+    @Qualifier("orderStateMutationExternalHttpNotifierService")
     private OrderStateMutationExternalNotifierService orderStateMutationExternalNotifierService;
 
     /* Constructors */
