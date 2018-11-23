@@ -2,6 +2,8 @@ package com.sfl.pms.services.payment.processing.impl.order;
 
 import com.sfl.pms.persistence.utility.PersistenceUtilityService;
 import com.sfl.pms.services.common.exception.ServicesRuntimeException;
+import com.sfl.pms.services.order.external.OrderStateMutationExternalNotifierService;
+import com.sfl.pms.services.order.model.OrderState;
 import com.sfl.pms.services.payment.common.model.PaymentState;
 import com.sfl.pms.services.payment.common.model.order.OrderPayment;
 import com.sfl.pms.services.payment.common.model.order.request.OrderRefundRequest;
@@ -13,6 +15,8 @@ import com.sfl.pms.services.payment.processing.impl.adyen.AdyenPaymentOperations
 import com.sfl.pms.services.payment.processing.order.OrderRefundRequestProcessorService;
 import com.sfl.pms.services.payment.provider.exception.UnknownPaymentProviderTypeException;
 import com.sfl.pms.services.payment.provider.model.PaymentProviderType;
+import org.apache.commons.lang3.mutable.Mutable;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +47,9 @@ public class OrderRefundRequestProcessorServiceImpl implements OrderRefundReques
 
     @Autowired
     private AdyenPaymentOperationsProcessor adyenPaymentOperationsProcessor;
+
+    @Autowired
+    private OrderStateMutationExternalNotifierService orderStateMutationExternalNotifierService;
 
     /* Constructors */
     public OrderRefundRequestProcessorServiceImpl() {
@@ -75,11 +82,27 @@ public class OrderRefundRequestProcessorServiceImpl implements OrderRefundReques
 
     /* Utility methods */
     private void updateRefundMethodRequestState(final Long requestId, final OrderRefundRequestState state) {
+        final OrderRefundRequest orderRefundRequest = saveRefundRequest(requestId, state);
+        final RefundState refundState = RefundState.stateFor(state);
+        if (!refundState.isCompleted()) {
+            return;
+        }
+        orderStateMutationExternalNotifierService.notifyOrderStateMutation(
+                orderRefundRequest.getOrderPaymentRequest().getOrder().getUuId(),
+                refundState.orderState,
+                refundState.paymentState,
+                orderRefundRequest.getOrderPaymentRequest().getUuId()
+        );
+    }
+
+    private OrderRefundRequest saveRefundRequest(final Long requestId, final OrderRefundRequestState state) {
+        final Mutable<OrderRefundRequest> refundRequest = new MutableObject<>();
         persistenceUtilityService.runInNewTransaction(() -> {
             final OrderRefundRequest orderRefundRequest = orderRefundRequestService.getById(requestId);
             orderRefundRequestService.updateState(orderRefundRequest.getUuId(), state);
+            refundRequest.setValue(orderRefundRequest);
         });
-        //todo: vas call qup-core for status update chack with Hayk
+        return refundRequest.getValue();
     }
 
     private PaymentProviderOperationsProcessor getPaymentProviderProcessorForPaymentProviderType(final PaymentProviderType paymentProviderType) {
@@ -92,6 +115,35 @@ public class OrderRefundRequestProcessorServiceImpl implements OrderRefundReques
                 LOGGER.error("Unkown payment provider - {}", paymentProviderType);
                 throw new UnknownPaymentProviderTypeException(paymentProviderType);
             }
+        }
+    }
+
+    private final static class RefundState {
+        private final OrderState orderState;
+        private final PaymentState paymentState;
+
+        RefundState(final OrderState orderState, final PaymentState paymentState) {
+            this.orderState = orderState;
+            this.paymentState = paymentState;
+        }
+
+        static RefundState stateFor(final OrderRefundRequestState state) {
+            if (OrderRefundRequestState.PROCESSED.equals(state)) {
+                return new RefundState(OrderState.REFUNDED, PaymentState.REFUNDED);
+            }
+            if (OrderRefundRequestState.FAILED.equals(state)) {
+                return new RefundState(OrderState.REFUND_FAILED, PaymentState.REFUND_FAILED);
+            }
+            return RefundState.incomplete();
+
+        }
+
+        private static RefundState incomplete() {
+            return new RefundState(null, null);
+        }
+
+        boolean isCompleted() {
+            return orderState != null;
         }
     }
 }
