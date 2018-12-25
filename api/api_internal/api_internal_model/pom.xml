@@ -159,4 +159,15 @@
         </pluginManagement>
     </build>
 
+    <distributionManagement>
+        <repository>
+            <id>maven-release</id>
+            <url>https://nexus.ci.funtrips.io/repository/maven-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>maven-snapshot</id>
+            <url>https://nexus.ci.funtrips.io/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
 </project>
