@@ -5,13 +5,13 @@
     <servers>
         <server>
             <id>maven-snapshot</id>
-            <username>${env.SONATYPE_USERNAME}</username>
-            <password>${env.SONATYPE_PASSWORD}</password>
+            <username>${env.MAVEN_USERNAME}</username>
+            <password>${env.MAVEN_PASSWORD}</password>
         </server>
         <server>
             <id>maven-release</id>
-            <username>${env.SONATYPE_USERNAME}</username>
-            <password>${env.SONATYPE_PASSWORD}</password>
+            <username>${env.MAVEN_USERNAME}</username>
+            <password>${env.MAVEN_PASSWORD}</password>
         </server>
     </servers>
 </settings>
