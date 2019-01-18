@@ -172,12 +172,12 @@
 
     <distributionManagement>
         <repository>
-            <id>sfl-ms-payment-release</id>
-            <url>http://maven.sflpro.com/content/repositories/sfl-ms-payment-release</url>
+            <id>maven-release</id>
+            <url>https://nexus.ci.funtrips.io/repository/maven-releases/</url>
         </repository>
         <snapshotRepository>
-            <id>sfl-ms-payment-snapshot</id>
-            <url>http://maven.sflpro.com/content/repositories/sfl-ms-payment-snapshot</url>
+            <id>maven-snapshot</id>
+            <url>https://nexus.ci.funtrips.io/repository/maven-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 </project>

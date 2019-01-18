@@ -10,5 +10,7 @@ public enum OrderState {
     CREATED,
     PAYMENT_PROCESSING_STARTED,
     PAYMENT_FAILED,
-    PAID
+    PAID,
+    REFUNDED,
+    REFUND_FAILED
 }
