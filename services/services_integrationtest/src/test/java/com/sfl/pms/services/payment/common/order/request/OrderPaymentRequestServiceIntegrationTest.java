@@ -12,12 +12,13 @@ import com.sfl.pms.services.payment.common.model.order.request.*;
 import com.sfl.pms.services.payment.customer.method.model.CustomerPaymentMethod;
 import com.sfl.pms.services.test.AbstractServiceIntegrationTest;
 import com.sfl.pms.services.util.mutable.MutableHolder;
-import static org.junit.Assert.*;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Arrays;
 import java.util.HashSet;
+
+import static org.junit.Assert.*;
 
 /**
  * User: Ruben Dilanyan
@@ -165,6 +166,19 @@ public class OrderPaymentRequestServiceIntegrationTest extends AbstractServiceIn
         final OrderPaymentRequest result = orderPaymentRequestService.getOrderPaymentRequestById(orderPaymentRequest.getId());
         assertEquals(orderPaymentRequest, result);
     }
+
+    @Test
+    public void getByPaymentId() {
+        // Prepare data
+        final OrderPaymentRequest orderPaymentRequest = getServicesTestHelper().createOrderPaymentRequest();
+        final OrderPayment orderPayment = getServicesTestHelper().createOrderPayment(orderPaymentRequest.getOrder());
+        orderPaymentRequestService.updateOrderPaymentRequestPayment(orderPaymentRequest.getId(), orderPayment.getId());
+        flushAndClear();
+        // Reload and assert
+        final OrderPaymentRequest result = orderPaymentRequestService.getByPaymentId(orderPaymentRequest.getOrderPayment().getId());
+        assertEquals(orderPaymentRequest, result);
+    }
+
 
     @Test
     public void testGetOrderPaymentRequestByUuId() {

@@ -33,6 +33,7 @@ public class PaymentProviderNotificationRepositoryImpl implements PaymentProvide
     public PaymentProviderNotification findByIdWithPessimisticWriteLock(@Nonnull final Long id) {
         Assert.notNull(id, "Payment provider notification id should not be null");
         LOGGER.debug("Loading payment provider notification with id - {} using pessimistic write lock.", id);
+        entityManager.flush();
         final PaymentProviderNotification paymentProviderNotification = entityManager.find(PaymentProviderNotification.class, id, LockModeType.PESSIMISTIC_WRITE);
         LOGGER.debug("Successfully retrieved payment provider notification with id - {} using pessimistic write lock. Payment provider notification - {}", id, paymentProviderNotification);
         return paymentProviderNotification;

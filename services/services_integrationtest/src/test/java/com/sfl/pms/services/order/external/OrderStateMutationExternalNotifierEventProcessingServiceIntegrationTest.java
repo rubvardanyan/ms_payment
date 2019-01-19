@@ -2,12 +2,11 @@ package com.sfl.pms.services.order.external;
 
 import com.sfl.pms.services.order.model.Order;
 import com.sfl.pms.services.order.model.OrderState;
+import com.sfl.pms.services.payment.common.model.order.OrderPayment;
 import com.sfl.pms.services.test.AbstractServiceIntegrationTest;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.UUID;
 
 /**
  * User: Ruben Dilanyan
@@ -31,8 +30,9 @@ public class OrderStateMutationExternalNotifierEventProcessingServiceIntegration
     public void testProcessOrderStateUpdatedEvent() {
         // Test data
         final Order order = getServicesTestHelper().createOrder();
+        final OrderPayment orderPayment = getServicesTestHelper().createOrderPayment(order);
         flushAndClear();
         // Process event
-        orderStateMutationExternalNotifierEventProcessingService.processOrderStateUpdatedEvent(order.getId(), OrderState.PAID, UUID.randomUUID().toString());
+        orderStateMutationExternalNotifierEventProcessingService.processOrderStateUpdatedEvent(order.getId(), OrderState.PAID, orderPayment.getUuId());
     }
 }

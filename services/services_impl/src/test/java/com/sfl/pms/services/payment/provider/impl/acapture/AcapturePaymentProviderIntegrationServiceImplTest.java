@@ -12,6 +12,8 @@ import com.sfl.pms.services.common.exception.ServicesRuntimeException;
 import com.sfl.pms.services.payment.common.PaymentService;
 import com.sfl.pms.services.payment.common.model.Payment;
 import com.sfl.pms.services.payment.common.model.channel.ProvidedPaymentMethodProcessingChannel;
+import com.sfl.pms.services.payment.common.model.order.request.OrderPaymentRequest;
+import com.sfl.pms.services.payment.common.order.request.OrderPaymentRequestService;
 import com.sfl.pms.services.payment.method.acapture.AcapturePaymentMethodSettingsService;
 import com.sfl.pms.services.payment.method.model.PaymentMethodType;
 import com.sfl.pms.services.payment.method.model.acapture.AcapturePaymentMethodSettings;
@@ -51,6 +53,9 @@ public class AcapturePaymentProviderIntegrationServiceImplTest extends AbstractS
 
     @Mock
     private AcaptureApiCommunicator acaptureApiCommunicator;
+
+    @Mock
+    private OrderPaymentRequestService orderPaymentRequestService;
 
     /* Constructor */
     public AcapturePaymentProviderIntegrationServiceImplTest() {
@@ -126,6 +131,7 @@ public class AcapturePaymentProviderIntegrationServiceImplTest extends AbstractS
         // Test data
         final Long paymentId = 127L;
         final Payment payment = getServicesImplTestHelper().createOrderPayment();
+        final OrderPaymentRequest orderPaymentRequest = getServicesImplTestHelper().createOrderPaymentRequest();
         final ProvidedPaymentMethodProcessingChannel processingChannel = getServicesImplTestHelper().createProvidedPaymentMethodProcessingChannel();
         processingChannel.setPaymentMethodType(PaymentMethodType.MASTER_CARD);
         payment.setPaymentProcessingChannel(processingChannel);
@@ -135,7 +141,7 @@ public class AcapturePaymentProviderIntegrationServiceImplTest extends AbstractS
         createCheckoutRequest.setPaymentType(PaymentType.PRE_AUTHORIZATION);
         createCheckoutRequest.setAuthenticationModel(new AcaptureAuthenticationModel(paymentMethodSettings.getAuthorizationId()));
         createCheckoutRequest.setAmountModel(new AcaptureAmountModel(payment.getCurrency().getCode(), payment.getAmount()));
-        createCheckoutRequest.setPaymentUuid(payment.getUuId());
+        createCheckoutRequest.setPaymentUuid(orderPaymentRequest.getUuId());
         final CreateCheckoutResponse createCheckoutResponse = new CreateCheckoutResponse();
         createCheckoutResponse.setCheckoutId(UUID.randomUUID().toString());
         createCheckoutResponse.setResult(new AcaptureResultModel(AcaptureStatusCodes.CHECKOUT_SUCCESSFULLY_DELETED.getCode(), "Result description"));
@@ -146,6 +152,7 @@ public class AcapturePaymentProviderIntegrationServiceImplTest extends AbstractS
         expect(acapturePaymentSettingsService.getActivePaymentSettings()).andReturn(paymentSettings);
         expect(paymentMethodSettingsService.getAcapturePaymentMethodSettingsByPaymentMethodTypeAndPaymentSettingsId(processingChannel.getPaymentMethodType().getAcapturePaymentMethodType(), paymentSettings.getId()))
                 .andReturn(paymentMethodSettings);
+        expect(orderPaymentRequestService.getByPaymentId(paymentId)).andReturn(orderPaymentRequest);
         expect(acaptureApiCommunicator.createCheckout(createCheckoutRequest)).andReturn(createCheckoutResponse);
         // Replay
         replayAll();
@@ -165,6 +172,7 @@ public class AcapturePaymentProviderIntegrationServiceImplTest extends AbstractS
         // Test data
         final Long paymentId = 127L;
         final Payment payment = getServicesImplTestHelper().createOrderPayment();
+        final OrderPaymentRequest orderPaymentRequest = getServicesImplTestHelper().createOrderPaymentRequest();
         final ProvidedPaymentMethodProcessingChannel processingChannel = getServicesImplTestHelper().createProvidedPaymentMethodProcessingChannel();
         processingChannel.setPaymentMethodType(PaymentMethodType.MASTER_CARD);
         payment.setPaymentProcessingChannel(processingChannel);
@@ -174,7 +182,7 @@ public class AcapturePaymentProviderIntegrationServiceImplTest extends AbstractS
         createCheckoutRequest.setPaymentType(PaymentType.PRE_AUTHORIZATION);
         createCheckoutRequest.setAuthenticationModel(new AcaptureAuthenticationModel(paymentMethodSettings.getAuthorizationId()));
         createCheckoutRequest.setAmountModel(new AcaptureAmountModel(payment.getCurrency().getCode(), payment.getAmount()));
-        createCheckoutRequest.setPaymentUuid(payment.getUuId());
+        createCheckoutRequest.setPaymentUuid(orderPaymentRequest .getUuId());
         final CreateCheckoutResponse createCheckoutResponse = new CreateCheckoutResponse();
         createCheckoutResponse.setCheckoutId(UUID.randomUUID().toString());
         createCheckoutResponse.setResult(new AcaptureResultModel(AcaptureStatusCodes.CHECKOUT_SUCCESSFULLY_CREATED.getCode(), "Result description"));
@@ -185,6 +193,7 @@ public class AcapturePaymentProviderIntegrationServiceImplTest extends AbstractS
         expect(acapturePaymentSettingsService.getActivePaymentSettings()).andReturn(paymentSettings);
         expect(paymentMethodSettingsService.getAcapturePaymentMethodSettingsByPaymentMethodTypeAndPaymentSettingsId(processingChannel.getPaymentMethodType().getAcapturePaymentMethodType(), paymentSettings.getId()))
                 .andReturn(paymentMethodSettings);
+        expect(orderPaymentRequestService.getByPaymentId(paymentId)).andReturn(orderPaymentRequest);
         expect(acaptureApiCommunicator.createCheckout(createCheckoutRequest)).andReturn(createCheckoutResponse);
         // Replay
         replayAll();
