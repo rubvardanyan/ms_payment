@@ -20,4 +20,11 @@ public interface OrderPaymentRequestRepository extends JpaRepository<OrderPaymen
      * @return orderPaymentRequest
      */
     OrderPaymentRequest findByUuId(final String uuId);
+
+    /**
+     * Retrieve order payment request by payment id
+     * @param paymentId
+     * @return OrderPaymentRequest
+     */
+    OrderPaymentRequest findByOrderPaymentId(final Long paymentId);
 }
