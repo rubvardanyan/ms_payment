@@ -6,10 +6,7 @@ import com.sfl.pms.services.order.OrderService;
 import com.sfl.pms.services.order.model.Order;
 import com.sfl.pms.services.payment.common.dto.order.request.OrderPaymentRequestDto;
 import com.sfl.pms.services.payment.common.dto.order.request.OrderRequestPaymentMethodDto;
-import com.sfl.pms.services.payment.common.exception.order.InvalidOrderPaymentRequestPaymentException;
-import com.sfl.pms.services.payment.common.exception.order.OrderPaymentRequestNotFoundForIdException;
-import com.sfl.pms.services.payment.common.exception.order.OrderPaymentRequestNotFoundForUuIdException;
-import com.sfl.pms.services.payment.common.exception.order.OrderPaymentRequestStateNotAllowedException;
+import com.sfl.pms.services.payment.common.exception.order.*;
 import com.sfl.pms.services.payment.common.model.order.OrderPayment;
 import com.sfl.pms.services.payment.common.model.order.request.OrderPaymentRequest;
 import com.sfl.pms.services.payment.common.model.order.request.OrderPaymentRequestState;
@@ -171,6 +168,17 @@ public class OrderPaymentRequestServiceImpl implements OrderPaymentRequestServic
         return orderPaymentRequest;
     }
 
+    @Transactional
+    @Nonnull
+    @Override
+    public OrderPaymentRequest getByPaymentId(@Nonnull final Long paymentId) {
+        LOGGER.debug("Get order payment request by payment id - {}", paymentId);
+        final OrderPaymentRequest orderPaymentRequest = orderPaymentRequestRepository.findByOrderPaymentId(paymentId);
+        assertOrderPaymentRequestNotNullForPaymentId(orderPaymentRequest, paymentId);
+        LOGGER.debug("Successfully retrieved order payment request by payment id - {}", paymentId);
+        return orderPaymentRequest;
+    }
+
     /* Utility methods */
     private void assertPaymentRequestAndPaymentOrders(final OrderPaymentRequest orderPaymentRequest, final OrderPayment orderPayment) {
         // Grab order IDs
@@ -205,6 +213,13 @@ public class OrderPaymentRequestServiceImpl implements OrderPaymentRequestServic
         if (orderPaymentRequest == null) {
             LOGGER.error("No order payment request was found for id - {}", id);
             throw new OrderPaymentRequestNotFoundForIdException(id);
+        }
+    }
+
+    private void assertOrderPaymentRequestNotNullForPaymentId(final OrderPaymentRequest orderPaymentRequest, final Long paymentId) {
+        if (orderPaymentRequest == null) {
+            LOGGER.error("No order payment request was found for id - {}", paymentId);
+            throw new OrderPaymentRequestNotFoundForPaymentIdException(paymentId);
         }
     }
 

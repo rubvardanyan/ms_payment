@@ -22,6 +22,8 @@ import com.sfl.pms.services.payment.common.model.PaymentResultStatus;
 import com.sfl.pms.services.payment.common.model.acapture.AcapturePaymentResult;
 import com.sfl.pms.services.payment.common.model.channel.PaymentProcessingChannel;
 import com.sfl.pms.services.payment.common.model.channel.ProvidedPaymentMethodProcessingChannel;
+import com.sfl.pms.services.payment.common.model.order.request.OrderPaymentRequest;
+import com.sfl.pms.services.payment.common.order.request.OrderPaymentRequestService;
 import com.sfl.pms.services.payment.method.acapture.AcapturePaymentMethodSettingsService;
 import com.sfl.pms.services.payment.method.model.PaymentMethodType;
 import com.sfl.pms.services.payment.method.model.acapture.AcapturePaymentMethodSettings;
@@ -53,6 +55,9 @@ public class AcapturePaymentProviderIntegrationServiceImpl implements AcapturePa
     private PaymentService paymentService;
 
     @Autowired
+    private OrderPaymentRequestService orderPaymentRequestService;
+
+    @Autowired
     private AcapturePaymentMethodSettingsService paymentMethodSettingsService;
 
     @Autowired
@@ -79,11 +84,12 @@ public class AcapturePaymentProviderIntegrationServiceImpl implements AcapturePa
         Assert.notNull(acapturePaymentMethodType, "Acapture payment method should not be null");
         final AcapturePaymentSettings paymentSettings = acapturePaymentSettingsService.getActivePaymentSettings();
         final AcapturePaymentMethodSettings paymentMethodSettings = paymentMethodSettingsService.getAcapturePaymentMethodSettingsByPaymentMethodTypeAndPaymentSettingsId(acapturePaymentMethodType, paymentSettings.getId());
+        final OrderPaymentRequest orderPaymentRequest = orderPaymentRequestService.getByPaymentId(paymentId);
         final CreateCheckoutRequest createCheckoutRequest = new CreateCheckoutRequest();
         createCheckoutRequest.setPaymentType(PaymentType.PRE_AUTHORIZATION);
         createCheckoutRequest.setAmountModel(new AcaptureAmountModel(payment.getCurrency().getCode(), payment.getAmount()));
         createCheckoutRequest.setAuthenticationModel(new AcaptureAuthenticationModel(paymentMethodSettings.getAuthorizationId()));
-        createCheckoutRequest.setPaymentUuid(payment.getUuId());
+        createCheckoutRequest.setPaymentUuid(orderPaymentRequest.getUuId());
         final CreateCheckoutResponse checkoutResponse = acaptureApiCommunicator.createCheckout(createCheckoutRequest);
         if (!AcaptureStatusCodes.CHECKOUT_SUCCESSFULLY_CREATED.getCode().equals(checkoutResponse.getResult().getCode())) {
             LOGGER.error("Not success status code received during checkout creation with request - {}, response - {}", createCheckoutRequest, checkoutResponse);

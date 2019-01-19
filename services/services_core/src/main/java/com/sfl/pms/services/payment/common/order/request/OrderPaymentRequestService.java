@@ -79,4 +79,12 @@ public interface OrderPaymentRequestService {
      */
     @Nonnull
     OrderPaymentRequest updateOrderPaymentRequestPayment(@Nonnull final Long requestId, @Nonnull final Long orderPaymentId);
+
+    /**
+     * Get order payment request by payment id
+     * @param paymentId
+     * @return OrderPaymentRequest
+     */
+    @Nonnull
+    OrderPaymentRequest getByPaymentId(@Nonnull final Long paymentId);
 }
