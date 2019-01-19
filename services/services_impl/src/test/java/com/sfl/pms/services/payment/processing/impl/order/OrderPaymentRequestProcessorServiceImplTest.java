@@ -201,6 +201,7 @@ public class OrderPaymentRequestProcessorServiceImplTest extends AbstractService
         expect(orderService.updateOrderState(eq(orderStateChangeDto))).andReturn(null).once();
         expect(orderPaymentRequestService.updateOrderPaymentRequestState(eq(orderPaymentRequestId), EasyMock.eq(OrderPaymentRequestState.PROCESSING), eq(new LinkedHashSet<>(Arrays.asList(OrderPaymentRequestState.CREATED, OrderPaymentRequestState.FAILED))))).andReturn(orderPaymentRequest).once();
         expect(orderService.getOrderById(eq(orderId))).andReturn(order).once();
+        expect(individualPaymentMethodDefinitionService.checkIfPaymentMethodDefinitionExistsForLookupParameters(EasyMock.eq(orderRequestRedirectPaymentMethod.getPaymentMethodType()), eq(order.getCurrency()), EasyMock.eq(orderRequestRedirectPaymentMethod.getPaymentProviderType()))).andReturn(true).once();
         expect(individualPaymentMethodDefinitionService.getPaymentMethodDefinitionForLookupParameters(EasyMock.eq(orderRequestRedirectPaymentMethod.getPaymentMethodType()), eq(order.getCurrency()), EasyMock.eq(orderRequestRedirectPaymentMethod.getPaymentProviderType()))).andReturn(paymentMethodDefinition).once();
         expect(orderPaymentService.createPayment(eq(orderId), eq(expectedOrderPaymentDto), eq(paymentMethodProcessingChannelDto))).andReturn(orderPayment).once();
         expect(paymentProcessorService.processPayment(eq(orderPaymentId))).andReturn(paymentRedirectProcessingInformationDto).once();

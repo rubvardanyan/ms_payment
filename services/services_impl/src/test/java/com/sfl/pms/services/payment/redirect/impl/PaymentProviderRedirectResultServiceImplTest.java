@@ -7,7 +7,6 @@ import com.sfl.pms.services.payment.redirect.exception.PaymentProviderRedirectRe
 import com.sfl.pms.services.payment.redirect.exception.PaymentProviderRedirectResultStateNotAllowedException;
 import com.sfl.pms.services.payment.redirect.model.PaymentProviderRedirectResult;
 import com.sfl.pms.services.payment.redirect.model.PaymentProviderRedirectResultState;
-import com.sfl.pms.services.payment.redirect.model.acapture.AcaptureRedirectResult;
 import com.sfl.pms.services.payment.redirect.model.adyen.AdyenRedirectResult;
 import com.sfl.pms.services.util.mutable.MutableHolder;
 import org.easymock.Mock;
@@ -79,12 +78,15 @@ public class PaymentProviderRedirectResultServiceImplTest extends AbstractPaymen
     public void testUpdatePaymentProviderRedirectResultWithNotExistingRequestId() {
         // Test data
         final Long redirectResultId = 1l;
+        final AdyenRedirectResult redirectResult = (AdyenRedirectResult)getInstance();
+        redirectResult.setId(redirectResultId);
         final PaymentProviderRedirectResultState state = PaymentProviderRedirectResultState.PROCESSING;
         final Set<PaymentProviderRedirectResultState> allowedStates = new LinkedHashSet<>(Arrays.asList(PaymentProviderRedirectResultState.CREATED));
         // Reset
         resetAll();
         // Expectations
-        expect(paymentProviderRedirectResultRepository.findByIdWithPessimisticWriteLock(eq(redirectResultId), AdyenRedirectResult.class)).andReturn(null).once();
+        expect(paymentProviderRedirectResultRepository.findOne(redirectResultId)).andReturn(redirectResult).once();
+        expect(paymentProviderRedirectResultRepository.findByIdWithPessimisticWriteLock(eq(redirectResultId), eq(AdyenRedirectResult.class))).andReturn(null).once();
         // Replay
         replayAll();
         // Run test scenario
@@ -104,7 +106,7 @@ public class PaymentProviderRedirectResultServiceImplTest extends AbstractPaymen
         // Test data
         final Long redirectResultId = 1l;
         final PaymentProviderRedirectResultState state = PaymentProviderRedirectResultState.PROCESSING;
-        final PaymentProviderRedirectResult redirectResult = getInstance();
+        final AdyenRedirectResult redirectResult = (AdyenRedirectResult)getInstance();
         final PaymentProviderRedirectResultState initialState = redirectResult.getState();
         final MutableHolder<PaymentProviderRedirectResultState> notAllowedStateHolder = new MutableHolder<>(null);
         Arrays.asList(PaymentProviderRedirectResultState.values()).forEach(currentState -> {
@@ -116,7 +118,8 @@ public class PaymentProviderRedirectResultServiceImplTest extends AbstractPaymen
         // Reset
         resetAll();
         // Expectations
-        expect(paymentProviderRedirectResultRepository.findByIdWithPessimisticWriteLock(eq(redirectResultId), PaymentProviderRedirectResult.class)).andReturn(redirectResult).once();
+        expect(paymentProviderRedirectResultRepository.findOne(redirectResultId)).andReturn(redirectResult).once();
+        expect(paymentProviderRedirectResultRepository.findByIdWithPessimisticWriteLock(eq(redirectResultId), eq(AdyenRedirectResult.class))).andReturn(redirectResult).once();
         // Replay
         replayAll();
         // Run test scenario
@@ -136,14 +139,15 @@ public class PaymentProviderRedirectResultServiceImplTest extends AbstractPaymen
         // Test data
         final Long redirectResultId = 1l;
         final PaymentProviderRedirectResultState state = PaymentProviderRedirectResultState.PROCESSING;
-        final PaymentProviderRedirectResult redirectResult = getInstance();
+        final AdyenRedirectResult redirectResult = (AdyenRedirectResult)getInstance();
         final PaymentProviderRedirectResultState initialState = redirectResult.getState();
         final Set<PaymentProviderRedirectResultState> allowedStates = new LinkedHashSet<>(Arrays.asList(initialState));
         final Date requestUpdated = redirectResult.getUpdated();
         // Reset
         resetAll();
         // Expectations
-        expect(paymentProviderRedirectResultRepository.findByIdWithPessimisticWriteLock(eq(redirectResultId), PaymentProviderRedirectResult.class)).andReturn(redirectResult).once();
+        expect(paymentProviderRedirectResultRepository.findOne(redirectResultId)).andReturn(redirectResult).once();
+        expect(paymentProviderRedirectResultRepository.findByIdWithPessimisticWriteLock(eq(redirectResultId), eq(AdyenRedirectResult.class))).andReturn(redirectResult).once();
         expect(paymentProviderRedirectResultRepository.save(isA(PaymentProviderRedirectResult.class))).andAnswer(() -> (PaymentProviderRedirectResult) getCurrentArguments()[0]).once();
         // Replay
         replayAll();

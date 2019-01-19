@@ -190,7 +190,8 @@ public class AcapturePaymentProviderIntegrationServiceImpl implements AcapturePa
 
     /* Utility methods */
     private void assertPaymentUuidForStatusCheckResponse(final AcaptureRedirectResult redirectResult, final CheckPaymentStatusResponse response) {
-        if (!redirectResult.getPayment().getUuId().equals(response.getMerchantInvoiceId())) {
+        final OrderPaymentRequest orderPaymentRequest = orderPaymentRequestService.getByPaymentId(redirectResult.getPayment().getId());
+        if (!orderPaymentRequest.getUuId().equals(response.getMerchantInvoiceId())) {
             LOGGER.error("Wrong payment uuid retrieved from status check response - {}", response);
             throw new ServicesRuntimeException("Wrong payment uuid retrieved from status check response - " + response);
         }

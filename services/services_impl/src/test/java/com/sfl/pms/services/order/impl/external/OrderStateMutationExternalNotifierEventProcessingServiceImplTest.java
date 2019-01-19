@@ -7,6 +7,7 @@ import com.sfl.pms.services.order.model.Order;
 import com.sfl.pms.services.order.model.OrderState;
 import com.sfl.pms.services.order.model.payment.provider.OrderProviderPaymentChannel;
 import com.sfl.pms.services.payment.common.model.PaymentState;
+import com.sfl.pms.services.payment.common.model.order.OrderPayment;
 import com.sfl.pms.services.test.AbstractServicesUnitTest;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
@@ -76,13 +77,17 @@ public class OrderStateMutationExternalNotifierEventProcessingServiceImplTest ex
         final Order order = getServicesImplTestHelper().createOrder();
         final OrderProviderPaymentChannel orderProviderPaymentChannel = getServicesImplTestHelper().createOrderProviderPaymentChannel();
         final String paymentUuid = UUID.randomUUID().toString();
-        orderProviderPaymentChannel.setPayment(getServicesImplTestHelper().createOrderPayment());
+        final OrderPayment payment = getServicesImplTestHelper().createOrderPayment();
+        payment.setUuId(paymentUuid);
+        payment.setLastState(PaymentState.PAID);
+        orderProviderPaymentChannel.setPayment(payment);
         order.setPaymentChannel(orderProviderPaymentChannel);
+        order.getPayments().add(payment);
         // Reset
         resetAll();
         // Expectations
         expect(orderService.getOrderById(eq(orderId))).andReturn(order).once();
-        orderStateMutationExternalNotifierService.notifyOrderStateMutation(eq(order.getUuId()), eq(orderState), PaymentState.PAID, eq(paymentUuid));
+        orderStateMutationExternalNotifierService.notifyOrderStateMutation(eq(order.getUuId()), eq(orderState), eq(payment.getLastState()), eq(paymentUuid));
         expectLastCall().once();
         // Replay
         replayAll();
