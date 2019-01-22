@@ -1,7 +1,7 @@
 package com.sfl.pms.api.internal.client.rest.notification;
 
 import com.sfl.pms.core.api.internal.model.common.result.ResultResponseModel;
-import com.sfl.pms.core.api.internal.model.notification.request.CreatePaymentProviderNotificationRequest;
+import com.sfl.pms.core.api.internal.model.notification.request.CreateAdyenPaymentProviderNotificationRequest;
 import com.sfl.pms.core.api.internal.model.notification.response.CreatePaymentProviderNotificationResponse;
 
 import javax.annotation.Nonnull;
@@ -21,5 +21,5 @@ public interface PaymentProviderNotificationResourceClient {
      * @return response
      */
     @Nonnull
-    ResultResponseModel<CreatePaymentProviderNotificationResponse> createPaymentProviderNotification(@Nonnull final CreatePaymentProviderNotificationRequest request);
+    ResultResponseModel<CreatePaymentProviderNotificationResponse> createPaymentProviderNotification(@Nonnull final CreateAdyenPaymentProviderNotificationRequest request);
 }

@@ -4,7 +4,9 @@ import com.sfl.pms.api.internal.facade.notification.PaymentProviderNotificationF
 import com.sfl.pms.api.internal.facade.notification.exception.InvalidPaymentProviderNotificationsTokenException;
 import com.sfl.pms.core.api.internal.model.common.result.ErrorResponseModel;
 import com.sfl.pms.core.api.internal.model.common.result.ResultResponseModel;
-import com.sfl.pms.core.api.internal.model.notification.request.CreatePaymentProviderNotificationRequest;
+import com.sfl.pms.core.api.internal.model.notification.request.AbstractPaymentProviderNotificationRequest;
+import com.sfl.pms.core.api.internal.model.notification.request.CreateAcapturePaymentProviderNotificationRequest;
+import com.sfl.pms.core.api.internal.model.notification.request.CreateAdyenPaymentProviderNotificationRequest;
 import com.sfl.pms.core.api.internal.model.notification.response.CreatePaymentProviderNotificationResponse;
 import com.sfl.pms.services.payment.notification.PaymentProviderNotificationRequestService;
 import com.sfl.pms.services.payment.notification.dto.PaymentProviderNotificationRequestDto;
@@ -52,7 +54,7 @@ public class PaymentProviderNotificationFacadeImpl implements PaymentProviderNot
 
 
     @Override
-    public ResultResponseModel<CreatePaymentProviderNotificationResponse> createPaymentProviderNotificationRequest(@Nonnull final CreatePaymentProviderNotificationRequest request) {
+    public ResultResponseModel<CreatePaymentProviderNotificationResponse> createAdyenPaymentProviderNotificationRequest(@Nonnull final CreateAdyenPaymentProviderNotificationRequest request) {
         Assert.notNull(request, "Request should not be null");
         // Validate
         final List<ErrorResponseModel> errors = request.validateRequiredFields();
@@ -77,6 +79,24 @@ public class PaymentProviderNotificationFacadeImpl implements PaymentProviderNot
         final CreatePaymentProviderNotificationResponse response = new CreatePaymentProviderNotificationResponse(notificationRequest.getUuId());
         LOGGER.debug("Successfully created payment provider notification request for DTO  - {}, request - {}, response - {}", requestDto, request, response);
         return new ResultResponseModel<>(response);
+    }
+
+    @Override
+    public ResultResponseModel<CreatePaymentProviderNotificationResponse> createAcapturePaymentProviderNotificationRequest(@Nonnull final CreateAcapturePaymentProviderNotificationRequest request) {
+        Assert.notNull(request, "Request should not be null");
+        final List<ErrorResponseModel> errors = request.validateRequiredFields();
+        if(errors.size() > 0) {
+            return new ResultResponseModel<>(errors);
+        }
+        // Grab data
+        final String rawContent = request.getRawContent();
+        final String notificationsToken = request.getNotificationsToken();
+        final PaymentProviderType paymentProviderType = PaymentProviderType.valueOf(request.getPaymentProviderType().name());
+        final String clientIpAddress = request.getClientIpAddress();
+        LOGGER.debug("Creating new payment provider notification request, raw content - {}, notification token - {} ,payment provider type - {}, client IP address - {}", rawContent, notificationsToken, paymentProviderType, clientIpAddress);
+        // Assert payment provider notifications token
+        assertNotificationsToken(paymentProviderType, notificationsToken);
+        return null;
     }
 
     /* Utility methods */

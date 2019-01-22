@@ -3,7 +3,7 @@ package com.sfl.pms.api.internal.facade.helper;
 import com.sfl.pms.core.api.internal.model.currency.CurrencyClientType;
 import com.sfl.pms.core.api.internal.model.customer.CustomerModel;
 import com.sfl.pms.core.api.internal.model.method.PaymentMethodClientType;
-import com.sfl.pms.core.api.internal.model.notification.request.CreatePaymentProviderNotificationRequest;
+import com.sfl.pms.core.api.internal.model.notification.request.CreateAdyenPaymentProviderNotificationRequest;
 import com.sfl.pms.core.api.internal.model.order.OrderModel;
 import com.sfl.pms.core.api.internal.model.order.OrderRequestRedirectPaymentMethodModel;
 import com.sfl.pms.core.api.internal.model.order.request.CreateOrderRequest;
@@ -103,8 +103,8 @@ public class FacadeImplTestHelper {
     }
 
     /* Create payment provider notification request */
-    public CreatePaymentProviderNotificationRequest createCreatePaymentProviderNotificationRequest() {
-        final CreatePaymentProviderNotificationRequest request = new CreatePaymentProviderNotificationRequest();
+    public CreateAdyenPaymentProviderNotificationRequest createCreatePaymentProviderNotificationRequest() {
+        final CreateAdyenPaymentProviderNotificationRequest request = new CreateAdyenPaymentProviderNotificationRequest();
         request.setClientIpAddress("127.0.0.1");
         request.setNotificationsToken("GTFYTFTYTUYFTYFUYTFTTUITUFITFITFOFYGO");
         request.setPaymentProviderType(PaymentProviderClientType.ADYEN);

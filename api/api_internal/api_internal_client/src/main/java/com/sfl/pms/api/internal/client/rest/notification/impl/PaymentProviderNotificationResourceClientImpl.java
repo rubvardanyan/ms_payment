@@ -3,7 +3,7 @@ package com.sfl.pms.api.internal.client.rest.notification.impl;
 import com.sfl.pms.api.internal.client.rest.common.AbstractResourceClient;
 import com.sfl.pms.api.internal.client.rest.notification.PaymentProviderNotificationResourceClient;
 import com.sfl.pms.core.api.internal.model.common.result.ResultResponseModel;
-import com.sfl.pms.core.api.internal.model.notification.request.CreatePaymentProviderNotificationRequest;
+import com.sfl.pms.core.api.internal.model.notification.request.CreateAdyenPaymentProviderNotificationRequest;
 import com.sfl.pms.core.api.internal.model.notification.response.CreatePaymentProviderNotificationResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +41,7 @@ public class PaymentProviderNotificationResourceClientImpl extends AbstractResou
     //region Public methods
     @Nonnull
     @Override
-    public ResultResponseModel<CreatePaymentProviderNotificationResponse> createPaymentProviderNotification(@Nonnull final CreatePaymentProviderNotificationRequest request) {
+    public ResultResponseModel<CreatePaymentProviderNotificationResponse> createPaymentProviderNotification(@Nonnull final CreateAdyenPaymentProviderNotificationRequest request) {
         return getClient()
                 .target(getApiPath())
                 .path(RESOURCE_BASE_PATH)
