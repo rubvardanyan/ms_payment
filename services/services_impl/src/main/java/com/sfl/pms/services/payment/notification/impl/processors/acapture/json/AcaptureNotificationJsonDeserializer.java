@@ -1,6 +1,7 @@
 package com.sfl.pms.services.payment.notification.impl.processors.acapture.json;
 
 import com.sfl.pms.services.payment.notification.impl.processors.acapture.json.model.AcaptureEncryptedNotificationJsonModel;
+import com.sfl.pms.services.payment.notification.impl.processors.acapture.json.model.AcapturePaymentNotificationPayloadJsonModel;
 
 import javax.annotation.Nonnull;
 
@@ -19,4 +20,12 @@ public interface AcaptureNotificationJsonDeserializer {
      */
     @Nonnull
     AcaptureEncryptedNotificationJsonModel deserializeAcaptureEncryptedNotification(@Nonnull final String notificationJson);
+
+    /**
+     * Deserialize acapture decrypted notification content payload into JSON model
+     * @param payload payload
+     * @return AcapturePaymentNotificationPayloadJsonModel
+     */
+    @Nonnull
+    AcapturePaymentNotificationPayloadJsonModel deserializePaymentNotificationPayload(@Nonnull final String payload);
 }

@@ -33,9 +33,6 @@ public class AdyenPaymentProviderNotificationServiceImpl extends AbstractPayment
     @Autowired
     private AdyenPaymentProviderNotificationRepository adyenPaymentProviderNotificationRepository;
 
-    @Autowired
-    private PaymentProviderNotificationRepository paymentProviderNotificationRepository;
-
     /* Constructors */
     public AdyenPaymentProviderNotificationServiceImpl() {
         LOGGER.debug("Initializing Adyen payment provider notification service");
@@ -93,13 +90,5 @@ public class AdyenPaymentProviderNotificationServiceImpl extends AbstractPayment
 
     public void setAdyenPaymentProviderNotificationRepository(final AdyenPaymentProviderNotificationRepository adyenPaymentProviderNotificationRepository) {
         this.adyenPaymentProviderNotificationRepository = adyenPaymentProviderNotificationRepository;
-    }
-
-    public PaymentProviderNotificationRepository getPaymentProviderNotificationRepository() {
-        return paymentProviderNotificationRepository;
-    }
-
-    public void setPaymentProviderNotificationRepository(final PaymentProviderNotificationRepository paymentProviderNotificationRepository) {
-        this.paymentProviderNotificationRepository = paymentProviderNotificationRepository;
     }
 }

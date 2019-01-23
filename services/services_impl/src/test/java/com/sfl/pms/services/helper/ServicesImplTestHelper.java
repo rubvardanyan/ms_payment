@@ -71,10 +71,12 @@ import com.sfl.pms.services.payment.method.model.group.GroupPaymentMethodDefinit
 import com.sfl.pms.services.payment.method.model.individual.IndividualPaymentMethodDefinition;
 import com.sfl.pms.services.payment.notification.dto.PaymentProviderNotificationRequestDto;
 import com.sfl.pms.services.payment.notification.dto.adyen.AdyenPaymentProviderNotificationDto;
+import com.sfl.pms.services.payment.notification.impl.processors.acapture.json.model.*;
 import com.sfl.pms.services.payment.notification.impl.processors.adyen.json.model.*;
 import com.sfl.pms.services.payment.notification.model.PaymentProviderNotificationRequest;
 import com.sfl.pms.services.payment.notification.model.PaymentProviderNotificationRequestState;
 import com.sfl.pms.services.payment.notification.model.PaymentProviderNotificationState;
+import com.sfl.pms.services.payment.notification.model.acapture.AcapturePaymentProviderNotification;
 import com.sfl.pms.services.payment.notification.model.adyen.AdyenPaymentProviderNotification;
 import com.sfl.pms.services.payment.provider.dto.AdyenRedirectUrlGenerationDto;
 import com.sfl.pms.services.payment.provider.model.PaymentProviderIntegrationType;
@@ -89,10 +91,12 @@ import com.sfl.pms.services.payment.settings.model.acapture.AcapturePaymentSetti
 import com.sfl.pms.services.payment.settings.model.adyen.AdyenPaymentSettings;
 import com.sfl.pms.services.system.environment.model.EnvironmentType;
 import com.sfl.pms.services.util.mutable.MutableHolder;
+import org.joda.time.DateTime;
 import org.junit.Assert;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -601,6 +605,31 @@ public class ServicesImplTestHelper {
         return notificationJsonModel;
     }
 
+    /* Acapture notification json model */
+    public AcapturePaymentNotificationJsonModel createAcapturePaymentNotificationJsonModel() {
+        return new AcapturePaymentNotificationJsonModel(
+                AcaptureNotificationType.PAYMENT,
+                new AcapturePaymentNotificationPayloadJsonModel(
+                    UUID.randomUUID().toString(),
+                        "PA",
+                        "VISA",
+                        BigDecimal.TEN,
+                        "EUR",
+                        BigDecimal.TEN,
+                        "EUR",
+                        UUID.randomUUID().toString(),
+                        UUID.randomUUID().toString(),
+                        DateTime.now().toDate(),
+                        UUID.randomUUID().toString(),
+                        new AcaptureNotificationResultJsonModel(
+                                "000.100.110",
+                                "Request successfully processed in 'Merchant in Integrator Test Mode'"
+                        ),
+                        new AcaptureNotificationAuthenticationJsonModel(UUID.randomUUID().toString())
+                )
+        );
+    }
+
     /* Adyen payment provider notification request  */
     public AdyenPaymentProviderNotificationDto createAdyenPaymentProviderNotificationDto() {
         final AdyenPaymentProviderNotificationDto requestDto = new AdyenPaymentProviderNotificationDto();
@@ -643,6 +672,16 @@ public class ServicesImplTestHelper {
         assertEquals(notificationDto.getPspReference(), notification.getPspReference());
     }
 
+    /* Acapture payment provider notification */
+    public AcapturePaymentProviderNotification createAcapturePaymentProviderNotification() {
+        final AcapturePaymentProviderNotification notification = new AcapturePaymentProviderNotification(true);
+        notification.setResultDescription(UUID.randomUUID().toString());
+        notification.setResultCode(UUID.randomUUID().toString());
+        notification.setNdc(UUID.randomUUID().toString());
+        notification.setNotificationId(UUID.randomUUID().toString());
+        notification.setBuildNumber(UUID.randomUUID().toString());
+        return notification;
+    }
 
     /* Adyen redirect URL generation DTO */
     public AdyenRedirectUrlGenerationDto createAdyenRedirectUrlGenerationDto() {

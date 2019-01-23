@@ -6,6 +6,7 @@ import com.sfl.pms.services.payment.notification.PaymentProviderNotificationProc
 import com.sfl.pms.services.payment.notification.PaymentProviderNotificationRequestService;
 import com.sfl.pms.services.payment.notification.PaymentProviderNotificationService;
 import com.sfl.pms.services.payment.notification.impl.processors.PaymentProviderNotificationProcessor;
+import com.sfl.pms.services.payment.notification.impl.processors.acapture.AcaptureNotificationProcessor;
 import com.sfl.pms.services.payment.notification.impl.processors.adyen.AdyenNotificationProcessor;
 import com.sfl.pms.services.payment.notification.model.PaymentProviderNotification;
 import com.sfl.pms.services.payment.notification.model.PaymentProviderNotificationRequest;
@@ -17,6 +18,7 @@ import com.sfl.pms.services.util.mutable.MutableHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -44,7 +46,12 @@ public class PaymentProviderNotificationProcessingServiceImpl implements Payment
     private PersistenceUtilityService persistenceUtilityService;
 
     @Autowired
+    @Qualifier(value = "adyenNotificationProcessor")
     private AdyenNotificationProcessor adyenNotificationProcessor;
+
+    @Autowired
+    @Qualifier(value = "acaptureNotificationProcessor")
+    private AcaptureNotificationProcessor acaptureNotificationProcessor;
 
     /* Constructors */
     public PaymentProviderNotificationProcessingServiceImpl() {
@@ -130,6 +137,9 @@ public class PaymentProviderNotificationProcessingServiceImpl implements Payment
             case ADYEN: {
                 return adyenNotificationProcessor;
             }
+            case ACAPTURE: {
+                return acaptureNotificationProcessor;
+            }
             default: {
                 throw new UnknownPaymentProviderTypeException(paymentProviderType);
             }
@@ -167,5 +177,13 @@ public class PaymentProviderNotificationProcessingServiceImpl implements Payment
 
     public void setAdyenNotificationProcessor(final AdyenNotificationProcessor adyenNotificationProcessor) {
         this.adyenNotificationProcessor = adyenNotificationProcessor;
+    }
+
+    public AcaptureNotificationProcessor getAcaptureNotificationProcessor() {
+        return acaptureNotificationProcessor;
+    }
+
+    public void setAcaptureNotificationProcessor(final AcaptureNotificationProcessor acaptureNotificationProcessor) {
+        this.acaptureNotificationProcessor = acaptureNotificationProcessor;
     }
 }

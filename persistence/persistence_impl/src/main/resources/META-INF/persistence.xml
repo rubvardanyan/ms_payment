@@ -79,6 +79,7 @@
         <!-- Payment provider notification -->
         <class>com.sfl.pms.services.payment.notification.model.PaymentProviderNotification</class>
         <class>com.sfl.pms.services.payment.notification.model.adyen.AdyenPaymentProviderNotification</class>
+        <class>com.sfl.pms.services.payment.notification.model.acapture.AcapturePaymentProviderNotification</class>
         <class>com.sfl.pms.services.payment.notification.model.PaymentProviderNotificationRequest</class>
 
         <!-- Payment provider redirect result -->

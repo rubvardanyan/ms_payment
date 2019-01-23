@@ -37,7 +37,7 @@ import java.util.*;
  * Date: 4/28/15
  * Time: 11:27 AM
  */
-@Component
+@Component("adyenNotificationProcessor")
 public class AdyenNotificationProcessorImpl implements AdyenNotificationProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdyenNotificationProcessorImpl.class);

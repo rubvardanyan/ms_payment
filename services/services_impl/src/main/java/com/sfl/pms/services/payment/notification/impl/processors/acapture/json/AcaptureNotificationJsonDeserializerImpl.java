@@ -3,6 +3,7 @@ package com.sfl.pms.services.payment.notification.impl.processors.acapture.json;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sfl.pms.externalclients.common.http.exception.ExternalClientRuntimeException;
 import com.sfl.pms.services.payment.notification.impl.processors.acapture.json.model.AcaptureEncryptedNotificationJsonModel;
+import com.sfl.pms.services.payment.notification.impl.processors.acapture.json.model.AcapturePaymentNotificationPayloadJsonModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -34,6 +35,16 @@ public class AcaptureNotificationJsonDeserializerImpl implements AcaptureNotific
         final AcaptureEncryptedNotificationJsonModel notificationJsonModel = deserializeJson(notificationJson, AcaptureEncryptedNotificationJsonModel.class);
         LOGGER.debug("Acapture encrypted notification deserialization result is - {}, for json - {}", notificationJsonModel, notificationJson);
         return notificationJsonModel;
+    }
+
+    @Nonnull
+    @Override
+    public AcapturePaymentNotificationPayloadJsonModel deserializePaymentNotificationPayload(@Nonnull final String payload) {
+        Assert.notNull(payload, "Notification payload should not be null");
+        LOGGER.debug("Deserializing acapture notification decrypted payload - {}", payload);
+        final AcapturePaymentNotificationPayloadJsonModel payloadJsonModel = deserializeJson(payload, AcapturePaymentNotificationPayloadJsonModel.class);
+        LOGGER.debug("Acapture decrypted notification payload deserialization result is - {}, for json - {}", payloadJsonModel, payload);
+        return payloadJsonModel;
     }
 
     /* Utility methods */

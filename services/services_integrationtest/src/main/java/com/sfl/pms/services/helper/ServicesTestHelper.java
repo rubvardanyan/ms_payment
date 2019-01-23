@@ -1237,6 +1237,7 @@ public class ServicesTestHelper {
         paymentSettings.setUserName(UUID.randomUUID().toString());
         paymentSettings.setEnvironmentType(environmentType);
         paymentSettings.setHostPageUrl("http://mysite.com/payment/");
+        paymentSettings.setNotificationDecryptionKey(UUID.randomUUID().toString());
         return acapturePaymentSettingsRepository.save(paymentSettings);
     }
 
@@ -1249,6 +1250,7 @@ public class ServicesTestHelper {
         paymentMethodSettings.setProviderType(PaymentProviderType.ACAPTURE);
         paymentMethodSettings.setPaymentMethodType(PaymentMethodType.VISA);
         paymentMethodSettings.setPaymentSettings(createAcapturePaymentSettings());
+        paymentMethodSettings.setAuthorizationId(UUID.randomUUID().toString());
         paymentMethodSettings.setAuthorizationId(UUID.randomUUID().toString());
         return acapturePaymentMethodSettingsRepository.save(paymentMethodSettings);
     }
