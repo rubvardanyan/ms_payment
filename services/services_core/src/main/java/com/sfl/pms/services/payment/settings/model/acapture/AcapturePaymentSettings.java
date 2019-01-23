@@ -27,6 +27,9 @@ public class AcapturePaymentSettings extends PaymentProviderSettings {
     @Column(name = "hostedPageUrl", nullable = false)
     private String hostPageUrl;
 
+    @Column(name = "notification_decryption_key", nullable = false)
+    private String notificationDecryptionKey;
+
     /* Constructor */
     public AcapturePaymentSettings() {
         setType(PaymentProviderType.ACAPTURE);
@@ -41,6 +44,14 @@ public class AcapturePaymentSettings extends PaymentProviderSettings {
         this.hostPageUrl = hostPageUrl;
     }
 
+    public String getNotificationDecryptionKey() {
+        return notificationDecryptionKey;
+    }
+
+    public void setNotificationDecryptionKey(final String notificationDecryptionKey) {
+        this.notificationDecryptionKey = notificationDecryptionKey;
+    }
+
     /* Equals, HashCode and ToString */
     @Override
     public boolean equals(final Object o) {
@@ -53,6 +64,7 @@ public class AcapturePaymentSettings extends PaymentProviderSettings {
         return new EqualsBuilder()
                 .appendSuper(super.equals(o))
                 .append(hostPageUrl, that.hostPageUrl)
+                .append(notificationDecryptionKey, that.notificationDecryptionKey)
                 .isEquals();
     }
 
@@ -61,6 +73,7 @@ public class AcapturePaymentSettings extends PaymentProviderSettings {
         return new HashCodeBuilder(17, 37)
                 .appendSuper(super.hashCode())
                 .append(hostPageUrl)
+                .append(notificationDecryptionKey)
                 .toHashCode();
     }
 
@@ -68,6 +81,7 @@ public class AcapturePaymentSettings extends PaymentProviderSettings {
     public String toString() {
         return new ToStringBuilder(this)
                 .append("hostPageUrl", hostPageUrl)
+                .append("notificationDecryptionKey", notificationDecryptionKey)
                 .toString();
     }
 }

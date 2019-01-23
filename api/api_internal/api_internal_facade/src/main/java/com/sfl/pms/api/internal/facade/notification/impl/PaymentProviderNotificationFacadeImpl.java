@@ -4,13 +4,15 @@ import com.sfl.pms.api.internal.facade.notification.PaymentProviderNotificationF
 import com.sfl.pms.api.internal.facade.notification.exception.InvalidPaymentProviderNotificationsTokenException;
 import com.sfl.pms.core.api.internal.model.common.result.ErrorResponseModel;
 import com.sfl.pms.core.api.internal.model.common.result.ResultResponseModel;
-import com.sfl.pms.core.api.internal.model.notification.request.AbstractPaymentProviderNotificationRequest;
 import com.sfl.pms.core.api.internal.model.notification.request.CreateAcapturePaymentProviderNotificationRequest;
 import com.sfl.pms.core.api.internal.model.notification.request.CreateAdyenPaymentProviderNotificationRequest;
 import com.sfl.pms.core.api.internal.model.notification.response.CreatePaymentProviderNotificationResponse;
 import com.sfl.pms.services.payment.notification.PaymentProviderNotificationRequestService;
 import com.sfl.pms.services.payment.notification.dto.PaymentProviderNotificationRequestDto;
 import com.sfl.pms.services.payment.notification.event.StartPaymentProviderNotificationRequestProcessingEvent;
+import com.sfl.pms.services.payment.notification.impl.processors.acapture.decrypt.AcaptureNotificationDecryptor;
+import com.sfl.pms.services.payment.notification.impl.processors.acapture.json.AcaptureNotificationJsonDeserializer;
+import com.sfl.pms.services.payment.notification.impl.processors.acapture.json.model.AcaptureEncryptedNotificationJsonModel;
 import com.sfl.pms.services.payment.notification.model.PaymentProviderNotificationRequest;
 import com.sfl.pms.services.payment.provider.model.PaymentProviderType;
 import com.sfl.pms.services.payment.settings.PaymentProviderSettingsService;
@@ -42,6 +44,12 @@ public class PaymentProviderNotificationFacadeImpl implements PaymentProviderNot
     private PaymentProviderNotificationRequestService paymentProviderNotificationRequestService;
 
     @Autowired
+    private AcaptureNotificationJsonDeserializer acaptureNotificationJsonDeserializer;
+
+    @Autowired
+    private AcaptureNotificationDecryptor acaptureNotificationDecryptor;
+
+    @Autowired
     private PaymentProviderSettingsService paymentProviderSettingsService;
 
     @Autowired
@@ -69,6 +77,7 @@ public class PaymentProviderNotificationFacadeImpl implements PaymentProviderNot
         LOGGER.debug("Creating new payment provider notification request, raw content - {}, notification token - {} ,payment provider type - {}, client IP address - {}", rawContent, notificationsToken, paymentProviderType, clientIpAddress);
         // Assert payment provider notifications token
         assertNotificationsToken(paymentProviderType, notificationsToken);
+
         // Create notification request DTO
         final PaymentProviderNotificationRequestDto requestDto = new PaymentProviderNotificationRequestDto(paymentProviderType, rawContent, clientIpAddress);
         // Create payment provider notification request
@@ -89,14 +98,26 @@ public class PaymentProviderNotificationFacadeImpl implements PaymentProviderNot
             return new ResultResponseModel<>(errors);
         }
         // Grab data
-        final String rawContent = request.getRawContent();
         final String notificationsToken = request.getNotificationsToken();
         final PaymentProviderType paymentProviderType = PaymentProviderType.valueOf(request.getPaymentProviderType().name());
         final String clientIpAddress = request.getClientIpAddress();
+        final String rawContent = request.getRawContent();
         LOGGER.debug("Creating new payment provider notification request, raw content - {}, notification token - {} ,payment provider type - {}, client IP address - {}", rawContent, notificationsToken, paymentProviderType, clientIpAddress);
         // Assert payment provider notifications token
         assertNotificationsToken(paymentProviderType, notificationsToken);
-        return null;
+        final AcaptureEncryptedNotificationJsonModel notificationJsonModel = acaptureNotificationJsonDeserializer.deserializeAcaptureEncryptedNotification(rawContent);
+        final String payload = notificationJsonModel.getPayload();
+        Assert.notNull(payload, "Acapture notification content's payload should not be null");
+        final String notificationRawContent = acaptureNotificationDecryptor.decryptNotificationPayload(payload, request.getAuthenticationTag(), request.getInitializationVector());
+        final PaymentProviderNotificationRequestDto requestDto = new PaymentProviderNotificationRequestDto(paymentProviderType, notificationRawContent, clientIpAddress);
+        // Create payment provider notification request
+        final PaymentProviderNotificationRequest notificationRequest = paymentProviderNotificationRequestService.createPaymentProviderNotificationRequest(requestDto);
+        // Publish event
+        applicationEventDistributionService.publishAsynchronousEvent(new StartPaymentProviderNotificationRequestProcessingEvent(notificationRequest.getId()));
+        // Create response
+        final CreatePaymentProviderNotificationResponse response = new CreatePaymentProviderNotificationResponse(notificationRequest.getUuId());
+        LOGGER.debug("Successfully created payment provider notification request for DTO  - {}, request - {}, response - {}", requestDto, request, response);
+        return new ResultResponseModel<>(response);
     }
 
     /* Utility methods */

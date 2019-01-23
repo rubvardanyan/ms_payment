@@ -10,6 +10,9 @@ import com.sfl.pms.core.api.internal.model.notification.response.CreatePaymentPr
 import com.sfl.pms.services.payment.notification.PaymentProviderNotificationRequestService;
 import com.sfl.pms.services.payment.notification.dto.PaymentProviderNotificationRequestDto;
 import com.sfl.pms.services.payment.notification.event.StartPaymentProviderNotificationRequestProcessingEvent;
+import com.sfl.pms.services.payment.notification.impl.processors.acapture.decrypt.AcaptureNotificationDecryptor;
+import com.sfl.pms.services.payment.notification.impl.processors.acapture.json.AcaptureNotificationJsonDeserializer;
+import com.sfl.pms.services.payment.notification.impl.processors.acapture.json.model.AcaptureEncryptedNotificationJsonModel;
 import com.sfl.pms.services.payment.notification.model.PaymentProviderNotificationRequest;
 import com.sfl.pms.services.payment.provider.model.PaymentProviderType;
 import com.sfl.pms.services.payment.settings.PaymentProviderSettingsService;
@@ -47,6 +50,13 @@ public class PaymentProviderNotificationFacadeImplTest extends AbstractFacadeUni
 
     @Mock
     private ApplicationEventDistributionService applicationEventDistributionService;
+
+    @Mock
+    private AcaptureNotificationDecryptor acaptureNotificationDecryptor;
+
+    @Mock
+    private AcaptureNotificationJsonDeserializer acaptureNotificationJsonDeserializer;
+
 
 
     /* Constructors */
@@ -104,6 +114,7 @@ public class PaymentProviderNotificationFacadeImplTest extends AbstractFacadeUni
     public void testCreateAdyenPaymentProviderNotificationRequestWithValidationErrors() {
         // Test data
         final CreateAdyenPaymentProviderNotificationRequest createAdyenPaymentProviderNotificationRequest = new CreateAdyenPaymentProviderNotificationRequest();
+        createAdyenPaymentProviderNotificationRequest.setPaymentProviderType(null);
         // Reset
         resetAll();
         // Replay
@@ -218,10 +229,51 @@ public class PaymentProviderNotificationFacadeImplTest extends AbstractFacadeUni
             paymentProviderNotificationFacade.createAcapturePaymentProviderNotificationRequest(request);
             fail("Exception should be thrown");
         } catch (InvalidPaymentProviderNotificationsTokenException ex) {
+            assertInvalidPaymentProviderNotificationsTokenException(ex, PaymentProviderType.ACAPTURE, request.getNotificationsToken(), acapturePaymentSettings.getNotificationsToken());
             // ignore
         }
         // Verify
         verifyAll();
+    }
+
+    @Test
+    public void testCreateAcapturePaymentProviderNotificationRequest() {
+        // Test data
+        final CreateAcapturePaymentProviderNotificationRequest request = new CreateAcapturePaymentProviderNotificationRequest(
+            UUID.randomUUID().toString(),
+            UUID.randomUUID().toString(),
+            UUID.randomUUID().toString(),
+            UUID.randomUUID().toString(),
+            UUID.randomUUID().toString()
+        );
+        final AcapturePaymentSettings paymentSettings = new AcapturePaymentSettings();
+        paymentSettings.setNotificationsToken(request.getNotificationsToken());
+        final String payload = UUID.randomUUID().toString();
+        final AcaptureEncryptedNotificationJsonModel notificationJsonModel = new AcaptureEncryptedNotificationJsonModel(payload);
+        final String decryptedContent = UUID.randomUUID().toString();
+        final PaymentProviderNotificationRequestDto requestDto = new PaymentProviderNotificationRequestDto(PaymentProviderType.ACAPTURE, decryptedContent, request.getClientIpAddress());
+        final PaymentProviderNotificationRequest notificationRequest = getFacadeImplTestHelper().createPaymentProviderNotificationRequest();
+        notificationRequest.setId(11L);
+        notificationRequest.setUuId(UUID.randomUUID().toString());
+        // Reset
+        resetAll();
+        // Expectations
+        expect(paymentProviderSettingsService.getActivePaymentProviderSettingsForType(PaymentProviderType.ACAPTURE)).andReturn(paymentSettings);
+        expect(acaptureNotificationJsonDeserializer.deserializeAcaptureEncryptedNotification(request.getRawContent())).andReturn(notificationJsonModel);
+        expect(acaptureNotificationDecryptor.decryptNotificationPayload(notificationJsonModel.getPayload(), request.getAuthenticationTag(), request.getInitializationVector()))
+                .andReturn(decryptedContent);
+        expect(paymentProviderNotificationRequestService.createPaymentProviderNotificationRequest(requestDto)).andReturn(notificationRequest);
+        applicationEventDistributionService.publishAsynchronousEvent(eq(new StartPaymentProviderNotificationRequestProcessingEvent(notificationRequest.getId())));
+        // Replay
+        replayAll();
+        // Run test scenario
+        final ResultResponseModel<CreatePaymentProviderNotificationResponse> result = paymentProviderNotificationFacade.createAcapturePaymentProviderNotificationRequest(request);
+        // Verify
+        verifyAll();
+        assertNotNull(result);
+        assertNotNull(result.getResponse());
+        assertEquals(0, result.getErrors().size());
+        assertEquals(notificationRequest.getUuId(), result.getResponse().getPaymentProviderNotificationRequestUuId());
     }
 
     /* Utility methods */
