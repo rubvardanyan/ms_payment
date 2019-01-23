@@ -33,9 +33,6 @@ public class AcapturePaymentProviderNotification extends PaymentProviderNotifica
     @Column(name = "result_description", nullable = false)
     private String resultDescription;
 
-    @Column(name = "build_number", nullable = false)
-    private String buildNumber;
-
     @Column(name = "ndc", nullable = false)
     private String ndc;
 
@@ -74,14 +71,6 @@ public class AcapturePaymentProviderNotification extends PaymentProviderNotifica
         this.resultDescription = resultDescription;
     }
 
-    public String getBuildNumber() {
-        return buildNumber;
-    }
-
-    public void setBuildNumber(final String buildNumber) {
-        this.buildNumber = buildNumber;
-    }
-
     public String getNdc() {
         return ndc;
     }
@@ -104,7 +93,6 @@ public class AcapturePaymentProviderNotification extends PaymentProviderNotifica
                 .append(notificationId, that.notificationId)
                 .append(resultCode, that.resultCode)
                 .append(resultDescription, that.resultDescription)
-                .append(buildNumber, that.buildNumber)
                 .append(ndc, that.ndc)
                 .isEquals();
     }
@@ -116,7 +104,6 @@ public class AcapturePaymentProviderNotification extends PaymentProviderNotifica
                 .append(notificationId)
                 .append(resultCode)
                 .append(resultDescription)
-                .append(buildNumber)
                 .append(ndc)
                 .toHashCode();
     }
@@ -128,7 +115,6 @@ public class AcapturePaymentProviderNotification extends PaymentProviderNotifica
                 .append("notificationId", notificationId)
                 .append("resultCode", resultCode)
                 .append("resultDescription", resultDescription)
-                .append("buildNumber", buildNumber)
                 .append("ndc", ndc)
                 .toString();
     }

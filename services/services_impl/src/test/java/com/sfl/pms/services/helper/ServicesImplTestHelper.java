@@ -679,7 +679,6 @@ public class ServicesImplTestHelper {
         notification.setResultCode(UUID.randomUUID().toString());
         notification.setNdc(UUID.randomUUID().toString());
         notification.setNotificationId(UUID.randomUUID().toString());
-        notification.setBuildNumber(UUID.randomUUID().toString());
         return notification;
     }
 

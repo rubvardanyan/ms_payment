@@ -23,8 +23,6 @@ public class AcapturePaymentProviderNotificationDto extends PaymentProviderNotif
 
     private String resultDescription;
 
-    private String buildNumber;
-
     private String ndc;
 
 
@@ -35,12 +33,11 @@ public class AcapturePaymentProviderNotificationDto extends PaymentProviderNotif
 
     public AcapturePaymentProviderNotificationDto(final String rawContent,final String clientIpAddress,
                                                   final String notificationId, final String resultCode,
-                                                  final String resultDescription,final String buildNumber, final String ndc) {
+                                                  final String resultDescription, final String ndc) {
         super(PaymentProviderType.ACAPTURE, rawContent, clientIpAddress);
         this.notificationId = notificationId;
         this.resultCode = resultCode;
         this.resultDescription = resultDescription;
-        this.buildNumber = buildNumber;
         this.ndc = ndc;
     }
 
@@ -49,7 +46,6 @@ public class AcapturePaymentProviderNotificationDto extends PaymentProviderNotif
     @Override
     public void updateDomainEntityProperties(final AcapturePaymentProviderNotification notification) {
         super.updateDomainEntityProperties(notification);
-        notification.setBuildNumber(getBuildNumber());
         notification.setNotificationId(getNotificationId());
         notification.setNdc(getNdc());
         notification.setResultCode(getResultCode());
@@ -81,14 +77,6 @@ public class AcapturePaymentProviderNotificationDto extends PaymentProviderNotif
         this.resultDescription = resultDescription;
     }
 
-    public String getBuildNumber() {
-        return buildNumber;
-    }
-
-    public void setBuildNumber(final String buildNumber) {
-        this.buildNumber = buildNumber;
-    }
-
     public String getNdc() {
         return ndc;
     }
@@ -111,7 +99,6 @@ public class AcapturePaymentProviderNotificationDto extends PaymentProviderNotif
                 .append(notificationId, that.notificationId)
                 .append(resultCode, that.resultCode)
                 .append(resultDescription, that.resultDescription)
-                .append(buildNumber, that.buildNumber)
                 .append(ndc, that.ndc)
                 .isEquals();
     }
@@ -123,7 +110,6 @@ public class AcapturePaymentProviderNotificationDto extends PaymentProviderNotif
                 .append(notificationId)
                 .append(resultCode)
                 .append(resultDescription)
-                .append(buildNumber)
                 .append(ndc)
                 .toHashCode();
     }
@@ -135,7 +121,6 @@ public class AcapturePaymentProviderNotificationDto extends PaymentProviderNotif
                 .append("notificationId", notificationId)
                 .append("resultCode", resultCode)
                 .append("resultDescription", resultDescription)
-                .append("buildNumber", buildNumber)
                 .append("ndc", ndc)
                 .toString();
     }

@@ -8,6 +8,7 @@ import com.sfl.pms.services.payment.notification.impl.processors.acapture.json.m
 import com.sfl.pms.services.payment.notification.model.PaymentProviderNotification;
 import com.sfl.pms.services.payment.notification.model.PaymentProviderNotificationRequest;
 import com.sfl.pms.services.payment.notification.model.acapture.AcapturePaymentProviderNotification;
+import com.sfl.pms.services.payment.provider.model.PaymentProviderType;
 import com.sfl.pms.services.test.AbstractServicesUnitTest;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
@@ -51,6 +52,7 @@ public class AcaptureNotificationProcessorImplTest extends AbstractServicesUnitT
         // Run test scenario
         try {
             acaptureNotificationProcessor.createPaymentProviderNotificationForRequest(null);
+            fail("Exception should be thrown");
         } catch (IllegalArgumentException ex) {
             //ignore
         }
@@ -70,7 +72,6 @@ public class AcaptureNotificationProcessorImplTest extends AbstractServicesUnitT
                 notificationPayload.getId(),
                 notificationPayload.getResult().getCode(),
                 notificationPayload.getResult().getDescription(),
-                notificationPayload.getBuildNumber(),
                 notificationPayload.getNdc()
         );
         final AcapturePaymentProviderNotification notification = getServicesImplTestHelper().createAcapturePaymentProviderNotification();
@@ -88,5 +89,36 @@ public class AcaptureNotificationProcessorImplTest extends AbstractServicesUnitT
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals(notification, result.get(0));
+    }
+
+    @Test
+    public void testProcessPaymentProviderNotificationWithInvalidArguments() {
+        // Reset
+        resetAll();
+        // Replay
+        replayAll();
+        // Run test scenario
+        try {
+            acaptureNotificationProcessor.processPaymentProviderNotification(null);
+            fail("Exception should be thrown");
+        } catch (IllegalArgumentException ex) {
+            // ignore
+        }
+        try {
+            final AcapturePaymentProviderNotification notification = getServicesImplTestHelper().createAcapturePaymentProviderNotification();
+            notification.setType(PaymentProviderType.ADYEN);
+            acaptureNotificationProcessor.processPaymentProviderNotification(notification);
+            fail("Exception should be thrown");
+        } catch (IllegalArgumentException ex) {
+            // ignore
+        }
+        try {
+            acaptureNotificationProcessor.processPaymentProviderNotification(getServicesImplTestHelper().createAdyenPaymentProviderNotification());
+            fail("Exception should be thrown");
+        } catch (IllegalArgumentException ex) {
+            // ignore
+        }
+        // Verify
+        verifyAll();
     }
 }

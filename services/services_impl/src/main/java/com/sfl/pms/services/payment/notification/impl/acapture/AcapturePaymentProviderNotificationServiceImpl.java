@@ -65,7 +65,6 @@ public class AcapturePaymentProviderNotificationServiceImpl extends AbstractPaym
 
     private void assertAcapturePaymentProviderNotificationDto(final AcapturePaymentProviderNotificationDto notificationDto) {
         Assert.notNull(notificationDto);
-        Assert.notNull(notificationDto.getBuildNumber());
         Assert.notNull(notificationDto.getNdc());
         Assert.notNull(notificationDto.getResultCode());
         Assert.notNull(notificationDto.getResultDescription());
